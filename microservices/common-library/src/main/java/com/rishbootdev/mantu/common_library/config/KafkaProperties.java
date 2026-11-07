@@ -1,0 +1,26 @@
+package com.rishbootdev.mantu.common_library.config;
+
+import com.rishbootdev.mantu.common_library.enums.EventAggregateType;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
+import java.util.HashMap;
+import java.util.Map;
+
+@ConfigurationProperties(prefix = "app.kafka")
+@Getter
+@Setter
+public class KafkaProperties {
+    private final Map<String, String> topics = new HashMap<>();
+
+
+    public String topicFor(EventAggregateType aggregateType) {
+        String topic = topics.get(aggregateType.name().toLowerCase());
+
+        if(topic == null){
+            throw new IllegalStateException("No Kafka topic is configured for aggregateType " + aggregateType);
+        }
+        return topic;
+    }
+}

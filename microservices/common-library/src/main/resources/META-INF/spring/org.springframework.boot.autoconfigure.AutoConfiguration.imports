@@ -1,0 +1,6 @@
+com.rishbootdev.mantu.common_library.idempotency.SharedResilienceAutoConfiguration
+com.rishbootdev.mantu.common_library.audit.SharedAuditAutoConfiguration
+com.rishbootdev.mantu.common_library.util.SharedSecurityAutoConfiguration
+com.rishbootdev.mantu.common_library.config.SharedKafkaAutoConfiguration
+com.rishbootdev.mantu.common_library.exceptions.SharedExceptionAutoConfiguration
+com.rishbootdev.mantu.common_library.web.SharedWebFilterAutoConfiguration
