@@ -8,6 +8,8 @@
         <option value="$PROJECT_DIR$/microservices/eureka-discovery-service/pom.xml" />
         <option value="$PROJECT_DIR$/microservices/common-library/pom.xml" />
         <option value="$PROJECT_DIR$/microservices/config-service/pom.xml" />
+        <option value="$PROJECT_DIR$/microservices/vault-service/pom.xml" />
+        <option value="$PROJECT_DIR$/microservices/merchant-service/pom.xml" />
       </list>
     </option>
   </component>
