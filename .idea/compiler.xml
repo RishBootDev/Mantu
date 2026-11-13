@@ -20,7 +20,7 @@
         </processorPath>
         <module name="common-library" />
       </profile>
-      <profile name="Annotation profile for merchant-service" enabled="true">
+      <profile name="Annotation profile for payment-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -30,8 +30,9 @@
           <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.6.3/mapstruct-processor-1.6.3.jar" />
         </processorPath>
         <module name="merchant-service" />
+        <module name="payment-service" />
       </profile>
-      <profile name="Annotation profile for api-gateway" enabled="true">
+      <profile name="Annotation profile for vault-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -50,6 +51,7 @@
       <module name="config-service" options="-parameters" />
       <module name="eureka-discovery-service" options="-parameters" />
       <module name="merchant-service" options="-parameters" />
+      <module name="payment-service" options="-parameters" />
       <module name="vault-service" options="-parameters" />
     </option>
   </component>
