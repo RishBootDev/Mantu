@@ -1,0 +1,131 @@
+package com.rishbootdev.mantu.api_gateway.security;
+
+import com.rishbootdev.mantu.api_gateway.client.ApiKeyLookupClient;
+import com.rishbootdev.mantu.common_library.cache.ApiKeyCache;
+import com.rishbootdev.mantu.common_library.cache.ApiKeyCacheEntry;
+import com.rishbootdev.mantu.common_library.exceptions.RateLimitException;
+import com.rishbootdev.mantu.common_library.ratelimit.RateLimitResult;
+import com.rishbootdev.mantu.common_library.ratelimit.RateLimiter;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.time.Duration;
+import java.util.Base64;
+import java.util.Map;
+
+@Slf4j
+@Component
+@RequiredArgsConstructor
+public class ApiKeyAuthHandler {
+
+    private static final String BASIC_PREFIX = "Basic ";
+    private static final String SECRET_VERIFY_PREFIX = "apikey:secret-verified:";
+    private static final Duration SECRET_VERIFY_TTL = Duration.ofSeconds(30);
+    private static final BCryptPasswordEncoder BCRYPT = new BCryptPasswordEncoder();
+
+    private final ApiKeyCache apiKeyCache;
+    private final ApiKeyLookupClient apiKeyLookupClient;
+    private final RateLimiter rateLimiter;
+    private final StringRedisTemplate stringRedisTemplate;
+
+    @Value("${app.rate-limit.use-case.api-key.requests-per-minute:60}")
+    private int requestsPerMinute;
+
+    public Map<String, String> authenticate(String authHeader, HttpServletResponse response){
+        String[] credentials = decodeBasic(authHeader);
+        if (credentials == null) {
+            throw new GatewayAuthenticationException("Malformed API key header");
+        }
+        String keyId = credentials[0];
+        String rawSecret = credentials[1];
+
+        ApiKeyCacheEntry entry = apiKeyCache.get(keyId).orElseGet(() -> loadAndCache(keyId));
+
+        if (entry == null || !entry.enabled() || !secretMatches(rawSecret, entry)) {
+            throw new GatewayAuthenticationException("Invalid or missing API key");
+        }
+
+        RateLimitResult rateLimitResult = rateLimiter.check("apikey:" + keyId, requestsPerMinute, 60);
+
+        if (!rateLimitResult.isAllowed()) {
+            log.warn("Too many requests keyId={}", keyId);
+            throw new RateLimitException("Too many requests", rateLimitResult.retryAfterSeconds());
+        }
+
+        response.setHeader("X-RateLimit-Limit", String.valueOf(requestsPerMinute));
+        response.setHeader("X-RateLimit-Remaining", String.valueOf(rateLimitResult.remaining()));
+
+        return Map.of(
+                "X-Merchant-Id", entry.merchantId().toString(),
+                "X-Environment", entry.environment().name(),
+                "X-Key-Id", entry.keyId()
+        );
+
+    }
+
+    private boolean secretMatches(String rawSecret, ApiKeyCacheEntry entry) {
+        String cacheKey = SECRET_VERIFY_PREFIX + entry.keyId() + ":" + entry.keySecretHash() + ":" + sha256(rawSecret);
+
+        try {
+            if(Boolean.TRUE.equals(stringRedisTemplate.hasKey(cacheKey))) {
+                return true;
+            }
+        }catch (Exception e) {
+            log.warn("Secret verification cache read failed, keyId: {}", entry.keyId());
+        }
+
+        boolean matches = BCRYPT.matches(rawSecret, entry.keySecretHash())
+                || (entry.isInGracePeriod() && entry.previousKeySecretKeyHash() != null && BCRYPT.matches(rawSecret, entry.previousKeySecretKeyHash()));
+
+        if(matches) {
+            try {
+                stringRedisTemplate.opsForValue().set(cacheKey, "true", SECRET_VERIFY_TTL);
+            }catch (Exception e) {
+                log.warn("Secret verification cache put failed, keyId: {}", entry.keyId());
+            }
+        }
+        return matches;
+    }
+
+    public String sha256(String value) {
+        try {
+            byte[] hash = MessageDigest.getInstance("SHA-256").digest(value.getBytes(StandardCharsets.UTF_8));
+            return Base64.getEncoder().withoutPadding().encodeToString(hash);
+        }catch (Exception e) {
+            throw new IllegalStateException("SHA-256 unavailable",e);
+
+        }
+    }
+
+    private ApiKeyCacheEntry loadAndCache(String keyId) {
+
+        try {
+            ApiKeyCacheEntry entry = apiKeyLookupClient.findByKeyId(keyId);
+            apiKeyCache.put(keyId, entry);
+            return entry;
+        } catch (Exception e) {
+            log.warn("Api key lookup failed keyId={}", keyId, e);
+            return null;
+        }
+    }
+
+    private String[] decodeBasic(String header) {
+        try {
+            String encoded = header.substring(BASIC_PREFIX.length());
+            String decoded = new String(Base64.getDecoder().decode(encoded), StandardCharsets.UTF_8);
+            int colon = decoded.indexOf(':');
+            if (colon < 0) return null;
+            return new String[] { decoded.substring(0, colon), decoded.substring(colon + 1) };
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+}
