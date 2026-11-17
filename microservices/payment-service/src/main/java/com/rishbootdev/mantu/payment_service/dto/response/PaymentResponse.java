@@ -17,6 +17,7 @@ public record PaymentResponse(
         Money amount,
         PaymentStatus status,
         PaymentMethod method,
+        String selectedRouteId,
         Map<String, Object> methodDetails,
         String errorCode,
         String errorDescription,

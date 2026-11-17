@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.Map;
+import java.time.ZoneOffset;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -37,9 +38,11 @@ public class OutboxPoller {
                 String topic = kafkaProperties.topicFor(event.getAggregateType());
                 String key = extractMerchantId(event.getPayload());
                 Map<String, Object> envelope = Map.of(
+                        "eventId", event.getId().toString(),
                         "eventType", event.getEventType(),
                         "aggregateType", event.getAggregateType(),
                         "aggregateId", event.getAggregateId(),
+                        "occurredAt", event.getCreatedAt().atOffset(ZoneOffset.UTC).toInstant().toString(),
                         "data", event.getPayload()
                 );
 

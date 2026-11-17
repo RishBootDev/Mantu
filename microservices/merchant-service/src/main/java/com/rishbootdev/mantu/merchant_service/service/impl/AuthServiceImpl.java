@@ -16,6 +16,7 @@ import com.rishbootdev.mantu.merchant_service.repository.AppUserRepository;
 import com.rishbootdev.mantu.merchant_service.repository.MerchantRepository;
 import com.rishbootdev.mantu.merchant_service.security.JwtUtil;
 import com.rishbootdev.mantu.merchant_service.service.AuthService;
+import com.rishbootdev.mantu.merchant_service.kyc.MerchantKycService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +33,7 @@ public class AuthServiceImpl implements AuthService {
     private final MerchantMapper merchantMapper;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final MerchantKycService merchantKycService;
 
     @Override
     @Transactional
@@ -45,6 +47,7 @@ public class AuthServiceImpl implements AuthService {
         Merchant merchant = merchantMapper.toEntityFromSignUpRequest(request);
         merchant.setStatus(MerchantStatus.PENDING_KYC);
         merchant = merchantRepository.save(merchant);
+        merchantKycService.createDraftFor(merchant);
 
         AppUser appUser = AppUser.builder()
                 .email(request.email())
@@ -70,6 +73,7 @@ public class AuthServiceImpl implements AuthService {
         }
 
         String token = jwtUtil.generateAccessToken(request.email(), appUser.getMerchant().getId(), appUser.getRole().toString());
-        return new LoginResponse(token);
+        var onboarding = merchantKycService.status(appUser.getMerchant().getId());
+        return new LoginResponse(token, onboarding.merchantStatus(), onboarding.kycStatus(), onboarding.onboardingComplete());
     }
 }

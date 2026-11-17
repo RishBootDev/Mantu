@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -110,16 +111,16 @@ public class PaymentAuthorizationRecorder {
     }
 
     private void publishStatusEvent(Payment payment, String eventType) {
-
-        eventPublisher.publish(EventAggregateType.PAYMENT, payment.getId(), eventType,
-                Map.of("orderId", payment.getOrder().getId().toString(),
-                        "paymentId", payment.getId().toString(),
-                        "merchantId", payment.getMerchantId().toString(),
-                        "paymentStatus", payment.getStatus().name(),
-                        "amountUnits", payment.getAmount().getAmountUnits(),
-                        "amountCurrency", payment.getAmount().getCurrency(),
-                        "paymentMethod", payment.getMethod()
-
-                ));
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("orderId", payment.getOrder().getId().toString());
+        payload.put("paymentId", payment.getId().toString());
+        payload.put("merchantId", payment.getMerchantId().toString());
+        payload.put("paymentStatus", payment.getStatus().name());
+        payload.put("amountUnits", payment.getAmount().getAmountUnits());
+        payload.put("amountCurrency", payment.getAmount().getCurrency());
+        payload.put("paymentMethod", payment.getMethod().name());
+        payload.put("selectedRouteId", payment.getSelectedRouteId());
+        payload.put("errorCode", payment.getErrorCode());
+        eventPublisher.publish(EventAggregateType.PAYMENT, payment.getId(), eventType, payload);
     }
 }

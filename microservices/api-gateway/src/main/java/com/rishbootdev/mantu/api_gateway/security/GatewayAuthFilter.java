@@ -29,6 +29,7 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
 
     private final JwtAuthHandler jwtAuthHandler;
     private final ApiKeyAuthHandler apiKeyAuthHandler;
+    private final MerchantOnboardingGate merchantOnboardingGate;
     private final PublicRouteMatcher publicRouteMatcher;
     private final ObjectMapper objectMapper;
 
@@ -52,6 +53,12 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
                 identityHeaders = jwtAuthHandler.authenticate(authHeader.substring(BEARER_PREFIX.length()));
             }else {
                 reject(response, HttpStatus.UNAUTHORIZED, "UNAUTHORIZED", "Missing or invalid Authorization header");
+                return;
+            }
+
+            String merchantId = identityHeaders.get("X-Merchant-Id");
+            if (merchantId != null && !merchantOnboardingGate.permits(merchantId, request.getRequestURI())) {
+                reject(response, HttpStatus.FORBIDDEN, "KYC_REQUIRED", "Complete manual KYC approval to access payment features");
                 return;
             }
 

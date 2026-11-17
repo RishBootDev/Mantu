@@ -13,6 +13,7 @@ public record PaymentRequest(
         UUID merchantId,
         Money amount,
         PaymentMethod method,
-        Map<String, Object> methodDetails
+        Map<String, Object> methodDetails,
+        String selectedRouteId
 ) {
 }

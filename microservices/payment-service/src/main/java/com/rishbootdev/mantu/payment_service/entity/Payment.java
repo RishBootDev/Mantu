@@ -61,6 +61,9 @@ public class Payment extends BaseEntity {
     private String processorReference;
 
     @Column(length = 100)
+    private String selectedRouteId;
+
+    @Column(length = 100)
     private String errorCode;
 
     private String errorDescription;

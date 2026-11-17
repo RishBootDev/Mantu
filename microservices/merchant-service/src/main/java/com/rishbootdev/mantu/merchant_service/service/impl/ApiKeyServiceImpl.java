@@ -1,6 +1,8 @@
 package com.rishbootdev.mantu.merchant_service.service.impl;
 
 import com.rishbootdev.mantu.common_library.cache.ApiKeyCache;
+import com.rishbootdev.mantu.common_library.enums.MerchantStatus;
+import com.rishbootdev.mantu.common_library.exceptions.BusinessRuleViolationException;
 import com.rishbootdev.mantu.common_library.exceptions.ResourceNotFoundException;
 import com.rishbootdev.mantu.common_library.util.RandomizerUtil;
 import com.rishbootdev.mantu.merchant_service.dto.request.CreateApiKeyRequest;
@@ -38,6 +40,9 @@ public class ApiKeyServiceImpl implements ApiKeyService {
     public ApiKeyCreateResponse create(UUID merchantId, CreateApiKeyRequest request) {
         Merchant merchant = merchantRepository.findById(merchantId)
                 .orElseThrow(() -> new ResourceNotFoundException("merchant", merchantId));
+        if (merchant.getStatus() != MerchantStatus.ACTIVE) {
+            throw new BusinessRuleViolationException("Complete manual KYC approval before creating API keys", "KYC_REQUIRED");
+        }
 
         String keyId = "rzp_"+request.environment().name().toLowerCase()+"_"+ RandomizerUtil.randomBase64(24);
         String rawSecret = RandomizerUtil.randomBase64(40);
