@@ -5,7 +5,6 @@ import {
   XCircle,
   RefreshCw,
   Plus,
-  RotateCcw,
 } from 'lucide-react';
 import { Card } from '../../components/common/Card';
 import { Badge } from '../../components/common/Badge';
@@ -30,7 +29,7 @@ export const TransactionsPage: React.FC = () => {
   const loadData = async () => {
     try {
       setIsLoading(true);
-      const data = await paymentsApi.list();
+      const data = paymentsApi.getLocalDemoHistory();
       setPayments(data);
     } catch (err) {
       console.error(err);
@@ -38,21 +37,6 @@ export const TransactionsPage: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleRefund = (paymentId: string) => {
-    const updated = payments.map((p) => {
-      if (p.id === paymentId) {
-        return { ...p, status: 'REFUNDED' as const };
-      }
-      return p;
-    });
-    setPayments(updated);
-    localStorage.setItem('mantu_mock_payments', JSON.stringify(updated));
-    if (selectedPayment && selectedPayment.id === paymentId) {
-      setSelectedPayment({ ...selectedPayment, status: 'REFUNDED' });
-    }
-    showToast(`Refund processed for ${paymentId}`, 'success');
   };
 
   useEffect(() => {
@@ -108,6 +92,10 @@ export const TransactionsPage: React.FC = () => {
             Simulate Checkout
           </Button>
         </div>
+      </div>
+
+      <div className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+        Demo history: the supplied gateway contract does not expose a transaction-listing or refund endpoint. Records shown here are local checkout-simulator activity.
       </div>
 
       {/* Filter Toolbar */}
@@ -227,16 +215,6 @@ export const TransactionsPage: React.FC = () => {
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-1.5">
-                        {p.status === 'CAPTURED' && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleRefund(p.id)}
-                            leftIcon={<RotateCcw className="w-3 h-3 text-amber-600" />}
-                          >
-                            Refund
-                          </Button>
-                        )}
                         <Button
                           variant="outline"
                           size="sm"
@@ -310,16 +288,7 @@ export const TransactionsPage: React.FC = () => {
             </div>
 
             <div className="pt-2 flex justify-between items-center">
-              {selectedPayment.status === 'CAPTURED' ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleRefund(selectedPayment.id)}
-                  leftIcon={<RotateCcw className="w-3.5 h-3.5 text-amber-600" />}
-                >
-                  Issue Full Refund
-                </Button>
-              ) : <div />}
+              <div />
               <Button variant="outline" size="sm" onClick={() => setSelectedPayment(null)}>
                 Close
               </Button>

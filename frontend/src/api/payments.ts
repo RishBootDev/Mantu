@@ -56,17 +56,14 @@ const DEFAULT_PAYMENTS: PaymentResponse[] = [
 ];
 
 export const paymentsApi = {
-  async list(): Promise<PaymentResponse[]> {
-    try {
-      const res = await apiClient.get<PaymentResponse[]>('/v1/payments');
-      return res.data;
-    } catch (err: any) {
-      if (!err.response) {
-        const stored = localStorage.getItem('mantu_mock_payments');
-        return stored ? JSON.parse(stored) : DEFAULT_PAYMENTS;
-      }
-      throw err;
-    }
+  /**
+   * The supplied gateway contract has no payment-history endpoint. Keep the
+   * checkout simulator's local history separate from live gateway requests
+   * until the backend exposes an authenticated reporting endpoint.
+   */
+  getLocalDemoHistory(): PaymentResponse[] {
+    const stored = localStorage.getItem('mantu_mock_payments');
+    return stored ? JSON.parse(stored) : DEFAULT_PAYMENTS;
   },
 
   async tokenizeCard(req: TokenizeCardRequest): Promise<TokenizeCardResponse> {
@@ -136,7 +133,7 @@ export const paymentsApi = {
           };
         }
 
-        const existing = await this.list();
+        const existing = this.getLocalDemoHistory();
         localStorage.setItem('mantu_mock_payments', JSON.stringify([newPayment, ...existing]));
         return newPayment;
       }

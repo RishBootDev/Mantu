@@ -50,17 +50,10 @@ const DEFAULT_ORDERS: OrderResponse[] = [
 ];
 
 export const ordersApi = {
-  async list(): Promise<OrderResponse[]> {
-    try {
-      const res = await apiClient.get<OrderResponse[]>('/v1/orders');
-      return res.data;
-    } catch (err: any) {
-      if (!err.response) {
-        const stored = localStorage.getItem('mantu_mock_orders');
-        return stored ? JSON.parse(stored) : DEFAULT_ORDERS;
-      }
-      throw err;
-    }
+  /** The gateway catalog currently defines order creation, not order history. */
+  getLocalDemoHistory(): OrderResponse[] {
+    const stored = localStorage.getItem('mantu_mock_orders');
+    return stored ? JSON.parse(stored) : DEFAULT_ORDERS;
   },
 
   async create(req: CreateOrderRequest): Promise<OrderResponse> {
@@ -81,7 +74,7 @@ export const ordersApi = {
           createdAt: new Date().toISOString(),
         };
 
-        const existing = await this.list();
+        const existing = this.getLocalDemoHistory();
         localStorage.setItem('mantu_mock_orders', JSON.stringify([newOrder, ...existing]));
         return newOrder;
       }
