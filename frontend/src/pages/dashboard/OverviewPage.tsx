@@ -23,7 +23,7 @@ export const OverviewPage: React.FC = () => {
   const [timeframe, setTimeframe] = useState<'24h' | '7d' | '30d'>('7d');
 
   useEffect(() => {
-    paymentsApi.list().then(setPayments).catch(console.error);
+    setPayments(paymentsApi.getLocalDemoHistory());
   }, []);
 
   // Format currency in Indian Rupees
@@ -90,6 +90,10 @@ export const OverviewPage: React.FC = () => {
             30 Days
           </button>
         </div>
+      </div>
+
+      <div className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+        Demo analytics: the supplied API contract does not include a payment-history or analytics endpoint. This view shows local checkout-simulator activity only.
       </div>
 
       {/* 5 Compact Key Metric Cards */}

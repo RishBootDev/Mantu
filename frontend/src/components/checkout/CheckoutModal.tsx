@@ -56,7 +56,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       const vaultToken = await paymentsApi.tokenizeCard(cardData);
 
       // Step 2: Payment Initiation with ML Screening
-      const payment = await paymentsApi.initiate({
+      let payment = await paymentsApi.initiate({
         orderId,
         method: 'CARD',
         methodDetails: {
@@ -65,6 +65,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           lastFour: vaultToken.lastFour,
         },
       });
+      payment = await resolveAuthorizedPayment(payment);
 
       // Handle Result
       if (payment.status === 'CAPTURED') {
@@ -89,11 +90,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       setStatus('PROCESSING');
       setErrorMessage(null);
 
-      const payment = await paymentsApi.initiate({
+      let payment = await paymentsApi.initiate({
         orderId,
         method: 'UPI',
         methodDetails: { vpa },
       });
+      payment = await resolveAuthorizedPayment(payment);
 
       if (payment.status === 'CAPTURED') {
         setPaymentResult(payment);
@@ -117,11 +119,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       setStatus('PROCESSING');
       setErrorMessage(null);
 
-      const payment = await paymentsApi.initiate({
+      let payment = await paymentsApi.initiate({
         orderId,
         method: 'NETBANKING',
         methodDetails: { bank },
       });
+      payment = await resolveAuthorizedPayment(payment);
 
       if (payment.status === 'CAPTURED') {
         setPaymentResult(payment);
@@ -142,6 +145,13 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
     setStatus('IDLE');
     setPaymentResult(null);
     setErrorMessage(null);
+  };
+
+  // The API may return AUTHORIZED before capture. Capture it through the
+  // catalogued endpoint rather than treating authorization as a failure.
+  const resolveAuthorizedPayment = async (payment: PaymentResponse) => {
+    if (payment.status !== 'AUTHORIZED') return payment;
+    return paymentsApi.capture(payment.id);
   };
 
   return (

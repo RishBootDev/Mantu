@@ -14,6 +14,7 @@ import { ApiKeysPage } from '../pages/developers/ApiKeysPage';
 import { WebhooksPage } from '../pages/developers/WebhooksPage';
 import { AnomalyAlertsPage } from '../pages/risk/AnomalyAlertsPage';
 import { OpsReviewPage } from '../pages/ops/OpsReviewPage';
+import { LandingPage } from '../pages/LandingPage';
 import { useAuth } from '../context/AuthContext';
 
 const HomeRedirect: React.FC = () => {
@@ -33,20 +34,21 @@ const HomeRedirect: React.FC = () => {
 export const AppRoutes: React.FC = () => {
   return (
     <Routes>
+      <Route path="/" element={<LandingPage />} />
       {/* Public Auth Routes */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
 
       {/* Authenticated Application Shell */}
       <Route
-        path="/"
+        path="/*"
         element={
           <ProtectedRoute>
             <AppShell />
           </ProtectedRoute>
         }
       >
-        <Route index element={<HomeRedirect />} />
+        <Route path="app" element={<HomeRedirect />} />
 
         {/* KYC Onboarding (Always accessible to authenticated merchants) */}
         <Route path="onboarding/kyc" element={<KycOnboardingPage />} />
