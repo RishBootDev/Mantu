@@ -20,7 +20,10 @@ interface AuthState {
 const AuthContext = createContext<AuthState | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem('mantu_auth_token'));
+  const [token, setToken] = useState<string | null>(() => {
+    const stored = localStorage.getItem('mantu_auth_token');
+    return stored && stored !== 'undefined' && stored !== 'null' ? stored : null;
+  });
   const [merchantStatus, setMerchantStatus] = useState<MerchantStatus>(() => {
     return (localStorage.getItem('mantu_merchant_status') as MerchantStatus) || 'PENDING_KYC';
   });
@@ -30,8 +33,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [onboardingComplete, setOnboardingComplete] = useState<boolean>(() => {
     return localStorage.getItem('mantu_onboarding_complete') === 'true';
   });
-  const [email, setEmail] = useState<string>(() => localStorage.getItem('mantu_user_email') || 'alex@acmestore.com');
-  const [businessName, setBusinessName] = useState<string>(() => localStorage.getItem('mantu_business_name') || 'Acme Retail Store');
+  const [email, setEmail] = useState<string>(() => localStorage.getItem('mantu_user_email') || '');
+  const [businessName, setBusinessName] = useState<string>(() => localStorage.getItem('mantu_business_name') || '');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -63,13 +66,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const login = (res: LoginResponse, userEmail?: string) => {
-    setToken(res.token);
+    const token = res.token || res.accessToken;
+    if (!token) {
+      console.error('No auth token received from server', res);
+      return;
+    }
+    setToken(token);
     setMerchantStatus(res.merchantStatus);
     setKycStatus(res.kycStatus);
     setOnboardingComplete(res.onboardingComplete);
     if (userEmail) setEmail(userEmail);
 
-    localStorage.setItem('mantu_auth_token', res.token);
+    localStorage.setItem('mantu_auth_token', token);
     localStorage.setItem('mantu_merchant_status', res.merchantStatus);
     localStorage.setItem('mantu_kyc_status', res.kycStatus);
     localStorage.setItem('mantu_onboarding_complete', String(res.onboardingComplete));
@@ -81,10 +89,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setMerchantStatus('PENDING_KYC');
     setKycStatus('DRAFT');
     setOnboardingComplete(false);
+    setEmail('');
+    setBusinessName('');
     localStorage.removeItem('mantu_auth_token');
     localStorage.removeItem('mantu_merchant_status');
     localStorage.removeItem('mantu_kyc_status');
     localStorage.removeItem('mantu_onboarding_complete');
+    localStorage.removeItem('mantu_user_email');
+    localStorage.removeItem('mantu_business_name');
   };
 
   return (

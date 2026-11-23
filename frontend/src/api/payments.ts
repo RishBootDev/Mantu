@@ -6,54 +6,7 @@ import {
   PaymentResponse,
 } from '../types/api';
 
-const DEFAULT_PAYMENTS: PaymentResponse[] = [
-  {
-    id: 'pay_9b1deb4d3b7d4bad',
-    orderId: 'ord_91a84f6457174562b3fc',
-    merchantId: 'e4b2d56a-1153-4b62-9214-99d8d6f51cb3',
-    amount: {
-      amountUnits: 749900,
-      currency: 'INR',
-    },
-    status: 'CAPTURED',
-    method: 'CARD',
-    selectedRouteId: 'route_hdfc_primary',
-    methodDetails: { brand: 'VISA', lastFour: '4242' },
-    capturedAt: '2026-11-16T11:42:15Z',
-    createdAt: '2026-11-16T11:42:02Z',
-  },
-  {
-    id: 'pay_87162fa910284ab9',
-    orderId: 'ord_77e21a8829391039aafe',
-    merchantId: 'e4b2d56a-1153-4b62-9214-99d8d6f51cb3',
-    amount: {
-      amountUnits: 129900,
-      currency: 'INR',
-    },
-    status: 'CAPTURED',
-    method: 'UPI',
-    selectedRouteId: 'route_upi_axis_direct',
-    methodDetails: { vpa: 'sarah.connor@okhdfcbank' },
-    capturedAt: '2026-11-16T12:15:45Z',
-    createdAt: '2026-11-16T12:15:32Z',
-  },
-  {
-    id: 'pay_3fa01827b5244ca1',
-    orderId: 'ord_3fa85f6457174562b3fc',
-    merchantId: 'e4b2d56a-1153-4b62-9214-99d8d6f51cb3',
-    amount: {
-      amountUnits: 50000,
-      currency: 'INR',
-    },
-    status: 'FAILED',
-    method: 'CARD',
-    selectedRouteId: 'route_icici_fallback',
-    methodDetails: { brand: 'MASTERCARD', lastFour: '8812' },
-    errorCode: 'FRAUD_HIGH_RISK',
-    errorDescription: 'Transaction declined by ML Risk Engine (Score: 0.92 exceeds safe threshold)',
-    createdAt: '2026-11-16T12:05:10Z',
-  },
-];
+const DEFAULT_PAYMENTS: PaymentResponse[] = [];
 
 export const paymentsApi = {
   /**
@@ -106,11 +59,13 @@ export const paymentsApi = {
         
         let newPayment: PaymentResponse;
 
+        const currentMerchantId = localStorage.getItem('mantu_merchant_id') || '';
+
         if (isFraudSimulation) {
           newPayment = {
             id: paymentId,
             orderId: req.orderId,
-            merchantId: 'e4b2d56a-1153-4b62-9214-99d8d6f51cb3',
+            merchantId: currentMerchantId,
             amount: { amountUnits: 50000, currency: 'INR' },
             status: 'FAILED',
             method: req.method,
@@ -122,7 +77,7 @@ export const paymentsApi = {
           newPayment = {
             id: paymentId,
             orderId: req.orderId,
-            merchantId: 'e4b2d56a-1153-4b62-9214-99d8d6f51cb3',
+            merchantId: currentMerchantId,
             amount: { amountUnits: 50000, currency: 'INR' },
             status: 'CAPTURED',
             method: req.method,

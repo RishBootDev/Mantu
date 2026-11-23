@@ -5,4 +5,7 @@ import com.rishbootdev.mantu.merchant_service.kyc.KycCaseStatus;
 
 public record LoginResponse(String accessToken, MerchantStatus merchantStatus, KycCaseStatus kycStatus,
                             boolean onboardingComplete) {
+    public String token() {
+        return accessToken;
+    }
 }

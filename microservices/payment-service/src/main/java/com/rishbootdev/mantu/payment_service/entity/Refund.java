@@ -50,7 +50,7 @@ public class Refund extends BaseEntity {
     private String errorDescription;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "json")
     private Map<String, Object> notes;
 
     private LocalDateTime processedAt;

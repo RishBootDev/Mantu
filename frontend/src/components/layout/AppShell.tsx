@@ -11,12 +11,10 @@ export const AppShell: React.FC = () => {
   const getPageTitle = (path: string) => {
     if (path.includes('/dashboard')) return 'Merchant Dashboard';
     if (path.includes('/transactions')) return 'Transactions & Orders';
-    if (path.includes('/checkout-demo')) return 'Checkout Modal Simulator';
     if (path.includes('/risk-monitoring')) return 'Risk & ML Anomaly Detection';
     if (path.includes('/developers/api-keys')) return 'API Keys Management';
     if (path.includes('/developers/webhooks')) return 'Webhooks Configuration';
     if (path.includes('/onboarding/kyc')) return 'Merchant KYC Onboarding';
-    if (path.includes('/ops/kyc-review')) return 'Operations Review Console';
     return 'Mantu Gateway';
   };
 

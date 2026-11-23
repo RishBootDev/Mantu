@@ -90,6 +90,7 @@ export interface LoginRequest {
 
 export interface LoginResponse {
   token: string;
+  accessToken?: string;
   merchantStatus: MerchantStatus;
   kycStatus: KycCaseStatus;
   onboardingComplete: boolean;
@@ -111,6 +112,7 @@ export interface KycOnboardingResponse {
   kycStatus: KycCaseStatus;
   onboardingComplete: boolean;
   requiredDocuments: KycDocumentType[];
+  documents?: KycDocumentResponse[];
   uploadedDocuments: KycDocumentResponse[];
   reviewerNote: string | null;
   submittedAt: string | null;

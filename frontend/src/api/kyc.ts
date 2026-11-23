@@ -19,11 +19,20 @@ const DEFAULT_MOCK_KYC: KycOnboardingResponse = {
   submittedAt: null,
 };
 
+const normalizeKyc = (data: any): KycOnboardingResponse => {
+  const docs = data.uploadedDocuments || data.documents || [];
+  return {
+    ...data,
+    documents: docs,
+    uploadedDocuments: docs,
+  };
+};
+
 export const kycApi = {
   async getStatus(): Promise<KycOnboardingResponse> {
     try {
       const res = await apiClient.get<KycOnboardingResponse>('/v1/merchants/kyc');
-      return res.data;
+      return normalizeKyc(res.data);
     } catch (err: any) {
       if (!err.response) {
         const stored = localStorage.getItem('mantu_mock_kyc');
@@ -46,7 +55,7 @@ export const kycApi = {
           },
         }
       );
-      return res.data;
+      return normalizeKyc(res.data);
     } catch (err: any) {
       if (!err.response) {
         const current = await this.getStatus();
@@ -73,7 +82,7 @@ export const kycApi = {
   async submitForReview(): Promise<KycOnboardingResponse> {
     try {
       const res = await apiClient.post<KycOnboardingResponse>('/v1/merchants/kyc/submit');
-      return res.data;
+      return normalizeKyc(res.data);
     } catch (err: any) {
       if (!err.response) {
         const current = await this.getStatus();
@@ -88,6 +97,26 @@ export const kycApi = {
           ...current,
           kycStatus: 'UNDER_REVIEW',
           submittedAt: new Date().toISOString(),
+        };
+        localStorage.setItem('mantu_mock_kyc', JSON.stringify(updated));
+        return updated;
+      }
+      throw err;
+    }
+  },
+
+  async approveDemo(): Promise<KycOnboardingResponse> {
+    try {
+      const res = await apiClient.post<KycOnboardingResponse>('/v1/merchants/kyc/approve-demo');
+      return normalizeKyc(res.data);
+    } catch (err: any) {
+      if (!err.response) {
+        const current = await this.getStatus();
+        const updated: KycOnboardingResponse = {
+          ...current,
+          merchantStatus: 'ACTIVE',
+          kycStatus: 'APPROVED',
+          onboardingComplete: true,
         };
         localStorage.setItem('mantu_mock_kyc', JSON.stringify(updated));
         return updated;

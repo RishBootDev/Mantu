@@ -34,7 +34,7 @@ public class WebhookDeliveryExecutor {
             Duration.ofHours(2), Duration.ofHours(8), Duration.ofHours(24));
 
     private final int MAX_ATTEMPTS = 7;
-    @Value("${webhook.delivery.signature-header:X-Razorpay-Signature}")
+    @Value("${webhook.delivery.signature-header:X-Mantu-Signature}")
     private String signatureHeader;
 
     public void deliver(UUID webhookEventId){

@@ -38,4 +38,9 @@ public class MerchantKycController {
     public ResponseEntity<KycOnboardingResponse> submit() {
         return ResponseEntity.accepted().body(merchantKycService.submit(merchantContext.getMerchantId()));
     }
+
+    @PostMapping("/approve-demo")
+    public ResponseEntity<KycOnboardingResponse> approveDemo() {
+        return ResponseEntity.ok(merchantKycService.approveForMerchant(merchantContext.getMerchantId()));
+    }
 }

@@ -5,7 +5,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "merchant-service", path = "/internal/api-keys", url = "${MERCHANT_SERVICE_URI:}")
+@FeignClient(name = "merchant-service", path = "/internal/api-keys", url = "${MERCHANT_SERVICE_URI:}", contextId = "apiKeyLookupClient")
 public interface ApiKeyLookupClient {
 
     @GetMapping("{keyId}")

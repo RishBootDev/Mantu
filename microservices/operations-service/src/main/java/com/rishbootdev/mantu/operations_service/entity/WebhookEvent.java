@@ -32,7 +32,7 @@ public class WebhookEvent extends BaseEntity {
     private String eventType;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb", nullable = false)
+    @Column(columnDefinition = "json", nullable = false)
     private Map<String, Object> payload;
 
     @Column(nullable = false)

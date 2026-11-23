@@ -51,7 +51,7 @@ public class Payment extends BaseEntity {
     private PaymentMethod method;
 
     @JdbcTypeCode(org.hibernate.type.SqlTypes.JSON)
-    @Column(name = "method_details", columnDefinition = "jsonb")
+    @Column(name = "method_details", columnDefinition = "json")
     private Map<String, Object> methodDetails;
 
     @Column(length = 100)

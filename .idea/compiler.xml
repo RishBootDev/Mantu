@@ -31,7 +31,7 @@
         <module name="operations-service" />
         <module name="vault-service" />
       </profile>
-      <profile name="Annotation profile for merchant-service" enabled="true">
+      <profile name="Annotation profile for payment-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />

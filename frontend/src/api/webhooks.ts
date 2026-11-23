@@ -4,15 +4,7 @@ import {
   UpdateWebhookConfigRequest,
 } from '../types/api';
 
-const DEFAULT_WEBHOOKS: WebhookConfigResponse[] = [
-  {
-    id: 'e98e72c8-89c1-4ff2-a178-99933a00f5c1',
-    targetUrl: 'https://api.acmestore.com/mantu-webhook',
-    enabled: true,
-    eventTypes: ['PAYMENT_CAPTURED', 'PAYMENT_FAILED', 'REFUND_PROCESSED'],
-    createdAt: '2026-11-16T12:00:00Z',
-  },
-];
+const DEFAULT_WEBHOOKS: WebhookConfigResponse[] = [];
 
 export const webhooksApi = {
   async list(): Promise<WebhookConfigResponse[]> {

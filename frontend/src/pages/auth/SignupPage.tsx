@@ -8,15 +8,15 @@ import { Button } from '../../components/common/Button';
 import { useToast } from '../../components/common/Toast';
 
 export const SignupPage: React.FC = () => {
-  const [name, setName] = useState('Alex Johnson');
-  const [email, setEmail] = useState('alex@acmestore.com');
-  const [password, setPassword] = useState('SecurePassword123!');
-  const [businessName, setBusinessName] = useState('Acme Retail Store');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [businessName, setBusinessName] = useState('');
   const [businessType, setBusinessType] = useState<BusinessType>('PRIVATE_LIMITED');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  const { login } = useAuth();
+  const { login, updateBusinessName } = useAuth();
   const { showToast } = useToast();
   const navigate = useNavigate();
 
@@ -35,6 +35,7 @@ export const SignupPage: React.FC = () => {
 
       // Auto-login into draft KYC onboarding
       const loginRes = await authApi.login({ email, password });
+      updateBusinessName(businessName);
       login(loginRes, email);
       showToast('Registration successful! Please complete KYC.', 'success');
       navigate('/onboarding/kyc');
@@ -73,7 +74,7 @@ export const SignupPage: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="Alex Johnson"
+                  placeholder="e.g. John Doe"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 text-xs border border-mantu-border rounded focus:outline-none focus:border-mantu-accent font-sans"
@@ -90,7 +91,7 @@ export const SignupPage: React.FC = () => {
                 <input
                   type="email"
                   required
-                  placeholder="alex@acmestore.com"
+                  placeholder="name@company.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 text-xs border border-mantu-border rounded focus:outline-none focus:border-mantu-accent font-sans"
@@ -125,7 +126,7 @@ export const SignupPage: React.FC = () => {
                 <input
                   type="text"
                   required
-                  placeholder="Acme Retail Store Private Limited"
+                  placeholder="e.g. Acme Corp Private Limited"
                   value={businessName}
                   onChange={(e) => setBusinessName(e.target.value)}
                   className="w-full pl-9 pr-3 py-2 text-xs border border-mantu-border rounded focus:outline-none focus:border-mantu-accent font-sans"

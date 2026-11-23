@@ -53,7 +53,7 @@ public class OrderRecord extends BaseEntity {
     private int attempts = 0;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "json")
     private Map<String, Object> notes;
 
     @Column(nullable = false)

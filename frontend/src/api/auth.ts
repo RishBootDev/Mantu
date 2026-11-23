@@ -15,10 +15,10 @@ export const authApi = {
       if (!err.response) {
         // Fallback demo response for standalone/local development
         const mock: MerchantResponse = {
-          id: 'e4b2d56a-1153-4b62-9214-99d8d6f51cb3',
+          id: '',
           name: data.name,
           email: data.email,
-          businessName: data.businessName || 'Mantu Demo Enterprise',
+          businessName: data.businessName || '',
           businessType: data.businessType || 'PRIVATE_LIMITED',
           status: 'PENDING_KYC',
           createdAt: new Date().toISOString(),
@@ -31,8 +31,13 @@ export const authApi = {
 
   async login(data: LoginRequest): Promise<LoginResponse> {
     try {
-      const res = await apiClient.post<LoginResponse>('/v1/auth/login', data);
-      return res.data;
+      const res = await apiClient.post<any>('/v1/auth/login', data);
+      const token = res.data.token || res.data.accessToken || '';
+      return {
+        ...res.data,
+        token,
+        accessToken: token,
+      };
     } catch (err: any) {
       if (!err.response) {
         // Fallback demo response for standalone/local development

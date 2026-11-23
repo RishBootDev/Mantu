@@ -184,7 +184,7 @@ export const WebhooksPage: React.FC = () => {
       {/* Webhook Signature Verification Guide Card */}
       <Card title="Webhook Signature Verification" subtitle="HMAC SHA-256 Authentication Guide">
         <p className="text-xs text-mantu-muted leading-relaxed mb-3">
-          Every HTTP POST from Mantu includes header <code className="font-mono font-semibold text-mantu-text">X-Razorpay-Signature</code>. Validate this signature against your webhook secret before processing orders in your server.
+          Every HTTP POST from Mantu includes header <code className="font-mono font-semibold text-mantu-text">X-Mantu-Signature</code>. Validate this signature against your webhook secret before processing orders in your server.
         </p>
         <div className="p-3 bg-slate-900 text-slate-100 rounded text-[11px] font-mono overflow-x-auto">
 {`// Node.js Express Webhook Verification Example
@@ -192,7 +192,7 @@ const crypto = require('crypto');
 
 app.post('/mantu-webhook', (req, res) => {
   const secret = process.env.MANTU_WEBHOOK_SECRET;
-  const signature = req.headers['x-razorpay-signature'];
+  const signature = req.headers['x-mantu-signature'];
   const expected = crypto
     .createHmac('sha256', secret)
     .update(JSON.stringify(req.body))
@@ -283,7 +283,7 @@ app.post('/mantu-webhook', (req, res) => {
           isOpen={!!newWebhookSecret}
           onClose={() => setNewWebhookSecret(null)}
           title="Save Webhook Secret"
-          description="Use this secret to verify X-Razorpay-Signature in your backend."
+          description="Use this secret to verify X-Mantu-Signature in your backend."
           maxWidth="md"
         >
           <div className="space-y-3">

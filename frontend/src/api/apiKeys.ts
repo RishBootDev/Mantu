@@ -5,15 +5,7 @@ import {
   CreateApiKeyRequest,
 } from '../types/api';
 
-const DEFAULT_KEYS: ApiKeyResponse[] = [
-  {
-    id: 'key_1',
-    keyId: 'rzp_test_aB9xKlmnOpQrStUvWxYz',
-    environment: 'TEST',
-    enabled: true,
-    createdAt: '2026-11-16T10:00:00Z',
-  },
-];
+const DEFAULT_KEYS: ApiKeyResponse[] = [];
 
 export const apiKeysApi = {
   async list(): Promise<ApiKeyResponse[]> {
@@ -35,7 +27,7 @@ export const apiKeysApi = {
       return res.data;
     } catch (err: any) {
       if (!err.response) {
-        const prefix = req.environment === 'TEST' ? 'rzp_test_' : 'rzp_live_';
+        const prefix = req.environment === 'TEST' ? 'mantu_test_' : 'mantu_live_';
         const randomKey = prefix + Math.random().toString(36).substring(2, 12) + Math.random().toString(36).substring(2, 12);
         const randomSecret = 'sec_' + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
         

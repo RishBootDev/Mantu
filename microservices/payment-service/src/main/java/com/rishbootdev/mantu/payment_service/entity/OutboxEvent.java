@@ -36,7 +36,7 @@ public class OutboxEvent extends BaseEntity {
     private String eventType;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(nullable = false, columnDefinition = "jsonb")
+    @Column(nullable = false, columnDefinition = "json")
     private Map<String, Object> payload;
 
     @Enumerated(EnumType.STRING)

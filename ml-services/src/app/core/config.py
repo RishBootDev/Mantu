@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     eureka_app_name: str = "ml-services"
     eureka_instance_host: str | None = None
 
-    kafka_bootstrap_servers: str = "localhost:9092"
+    kafka_bootstrap_servers: str = "localhost:19092"
     kafka_consumer_group: str = "mantu-ml-workers"
     kafka_anomaly_topic: str = "payment.transaction.created"
     kafka_anomaly_result_topic: str = "ml.transaction.anomaly.detected"

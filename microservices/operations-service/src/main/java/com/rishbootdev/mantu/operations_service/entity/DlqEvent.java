@@ -34,7 +34,7 @@ public class DlqEvent extends BaseEntity {
     private String finalError;
 
     @JdbcTypeCode(SqlTypes.JSON)
-    @Column(columnDefinition = "jsonb")
+    @Column(columnDefinition = "json")
     private Map<String, Object> payload;
 
     private LocalDateTime movedAt;

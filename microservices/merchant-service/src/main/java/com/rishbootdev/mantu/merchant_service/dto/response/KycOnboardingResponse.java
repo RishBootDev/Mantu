@@ -16,4 +16,7 @@ public record KycOnboardingResponse(
         String reviewerNote,
         LocalDateTime submittedAt
 ) {
+    public List<KycDocumentResponse> uploadedDocuments() {
+        return documents;
+    }
 }

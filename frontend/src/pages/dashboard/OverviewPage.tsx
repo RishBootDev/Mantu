@@ -92,10 +92,6 @@ export const OverviewPage: React.FC = () => {
         </div>
       </div>
 
-      <div className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-        Demo analytics: the supplied API contract does not include a payment-history or analytics endpoint. This view shows local checkout-simulator activity only.
-      </div>
-
       {/* 5 Compact Key Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="bg-white p-4 rounded border border-mantu-border shadow-card">
@@ -106,8 +102,12 @@ export const OverviewPage: React.FC = () => {
           <div className="text-xl font-bold font-mono text-mantu-text tracking-tight">
             {formatRupees(totalVolumeUnits)}
           </div>
-          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-emerald-700 font-medium">
-            <span className="font-mono">+12.4%</span> vs prior period
+          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-mantu-muted font-medium">
+            {payments.length > 0 ? (
+              <span className="font-mono">{payments.length} transactions recorded</span>
+            ) : (
+              <span>No transactions recorded</span>
+            )}
           </div>
         </div>
 
@@ -181,71 +181,14 @@ export const OverviewPage: React.FC = () => {
             </div>
           </div>
 
-          {/* SVG Vector Line Chart */}
-          <div className="h-64 w-full pt-4">
-            <svg viewBox="0 0 600 200" className="w-full h-full overflow-visible">
-              <defs>
-                <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#2457D6" stopOpacity="0.15" />
-                  <stop offset="100%" stopColor="#2457D6" stopOpacity="0.0" />
-                </linearGradient>
-              </defs>
-              {/* Horizontal Grid lines */}
-              <line x1="40" y1="30" x2="580" y2="30" stroke="#E5E9EF" strokeDasharray="3 3" />
-              <line x1="40" y1="80" x2="580" y2="80" stroke="#E5E9EF" strokeDasharray="3 3" />
-              <line x1="40" y1="130" x2="580" y2="130" stroke="#E5E9EF" strokeDasharray="3 3" />
-              <line x1="40" y1="180" x2="580" y2="180" stroke="#E5E9EF" />
-
-              {/* Y Axis Labels */}
-              <text x="35" y="34" textAnchor="end" className="text-[10px] fill-slate-400 font-mono">₹10L</text>
-              <text x="35" y="84" textAnchor="end" className="text-[10px] fill-slate-400 font-mono">₹5L</text>
-              <text x="35" y="134" textAnchor="end" className="text-[10px] fill-slate-400 font-mono">₹2.5L</text>
-              <text x="35" y="184" textAnchor="end" className="text-[10px] fill-slate-400 font-mono">₹0</text>
-
-              {/* Area fill */}
-              <polygon
-                points="60,180 60,140 140,110 220,130 300,70 380,85 460,40 540,65 540,180"
-                fill="url(#chartGradient)"
-              />
-
-              {/* Polyline */}
-              <polyline
-                points="60,140 140,110 220,130 300,70 380,85 460,40 540,65"
-                fill="none"
-                stroke="#2457D6"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-
-              {/* Data points */}
-              {[
-                { x: 60, y: 140, val: '₹1.2L' },
-                { x: 140, y: 110, val: '₹3.4L' },
-                { x: 220, y: 130, val: '₹2.8L' },
-                { x: 300, y: 70, val: '₹6.1L' },
-                { x: 380, y: 85, val: '₹4.9L' },
-                { x: 460, y: 40, val: '₹8.9L' },
-                { x: 540, y: 65, val: '₹7.5L' },
-              ].map((pt, i) => (
-                <circle
-                  key={i}
-                  cx={pt.x}
-                  cy={pt.y}
-                  r="4"
-                  className="fill-white stroke-mantu-accent stroke-2 cursor-pointer hover:r-6 transition-all"
-                />
-              ))}
-
-              {/* X Axis Dates */}
-              <text x="60" y="196" textAnchor="middle" className="text-[10px] fill-slate-400 font-mono">Nov 10</text>
-              <text x="140" y="196" textAnchor="middle" className="text-[10px] fill-slate-400 font-mono">Nov 11</text>
-              <text x="220" y="196" textAnchor="middle" className="text-[10px] fill-slate-400 font-mono">Nov 12</text>
-              <text x="300" y="196" textAnchor="middle" className="text-[10px] fill-slate-400 font-mono">Nov 13</text>
-              <text x="380" y="196" textAnchor="middle" className="text-[10px] fill-slate-400 font-mono">Nov 14</text>
-              <text x="460" y="196" textAnchor="middle" className="text-[10px] fill-slate-400 font-mono">Nov 15</text>
-              <text x="540" y="196" textAnchor="middle" className="text-[10px] fill-slate-400 font-mono">Nov 16</text>
-            </svg>
+          {/* Volume Trend Section */}
+          <div className="h-64 w-full pt-4 flex flex-col items-center justify-center border border-dashed border-slate-200 rounded">
+            <div className="text-center p-6">
+              <p className="text-xs font-semibold text-mantu-text">No transaction volume recorded</p>
+              <p className="text-[11px] text-mantu-muted mt-1">
+                Volume trends will be automatically graphed here as transactions are processed.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -354,52 +297,60 @@ export const OverviewPage: React.FC = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-mantu-border font-sans">
-              {payments.slice(0, 5).map((p) => (
-                <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
-                  <td className="py-3 px-4 font-mono font-medium text-mantu-text">
-                    {p.id}
-                  </td>
-                  <td className="py-3 px-4 font-mono text-mantu-muted">
-                    {p.orderId}
-                  </td>
-                  <td className="py-3 px-4">
-                    <span className="inline-flex items-center gap-1.5 font-medium text-mantu-text">
-                      {p.method}
-                      {p.methodDetails?.brand && (
-                        <span className="font-mono text-[10px] text-mantu-muted">
-                          ({p.methodDetails.brand})
-                        </span>
-                      )}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 font-mono text-[11px] text-mantu-muted">
-                    {p.selectedRouteId || 'fastapi_ml_route'}
-                  </td>
-                  <td className="py-3 px-4 font-mono font-semibold text-mantu-text text-right">
-                    {formatRupees(p.amount.amountUnits)}
-                  </td>
-                  <td className="py-3 px-4 text-center">
-                    {p.status === 'CAPTURED' && (
-                      <Badge variant="success" dot>
-                        CAPTURED
-                      </Badge>
-                    )}
-                    {p.status === 'FAILED' && (
-                      <Badge variant="error" dot title={p.errorDescription || undefined}>
-                        FAILED
-                      </Badge>
-                    )}
-                    {p.status === 'AUTHORIZING' && (
-                      <Badge variant="warning" dot>
-                        AUTHORIZING
-                      </Badge>
-                    )}
-                  </td>
-                  <td className="py-3 px-4 font-mono text-[11px] text-mantu-muted">
-                    {new Date(p.createdAt).toLocaleTimeString()}
+              {payments.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-8 text-center text-mantu-muted text-xs">
+                    No recent transactions found.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                payments.slice(0, 5).map((p) => (
+                  <tr key={p.id} className="hover:bg-slate-50/60 transition-colors">
+                    <td className="py-3 px-4 font-mono font-medium text-mantu-text">
+                      {p.id}
+                    </td>
+                    <td className="py-3 px-4 font-mono text-mantu-muted">
+                      {p.orderId}
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="inline-flex items-center gap-1.5 font-medium text-mantu-text">
+                        {p.method}
+                        {p.methodDetails?.brand && (
+                          <span className="font-mono text-[10px] text-mantu-muted">
+                            ({p.methodDetails.brand})
+                          </span>
+                        )}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 font-mono text-[11px] text-mantu-muted">
+                      {p.selectedRouteId || 'fastapi_ml_route'}
+                    </td>
+                    <td className="py-3 px-4 font-mono font-semibold text-mantu-text text-right">
+                      {formatRupees(p.amount.amountUnits)}
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      {p.status === 'CAPTURED' && (
+                        <Badge variant="success" dot>
+                          CAPTURED
+                        </Badge>
+                      )}
+                      {p.status === 'FAILED' && (
+                        <Badge variant="error" dot title={p.errorDescription || undefined}>
+                          FAILED
+                        </Badge>
+                      )}
+                      {p.status === 'AUTHORIZING' && (
+                        <Badge variant="warning" dot>
+                          AUTHORIZING
+                        </Badge>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 font-mono text-[11px] text-mantu-muted">
+                      {new Date(p.createdAt).toLocaleTimeString()}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

@@ -8,8 +8,8 @@ import { Modal } from '../../components/common/Modal';
 import { useToast } from '../../components/common/Toast';
 
 export const LoginPage: React.FC = () => {
-  const [email, setEmail] = useState('alex@acmestore.com');
-  const [password, setPassword] = useState('SecurePassword123!');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -62,7 +62,7 @@ export const LoginPage: React.FC = () => {
           Sign In to Mantu Gateway
         </h2>
         <p className="mt-1 text-xs text-mantu-muted">
-          Enterprise merchant portal & payment operations console
+          Enterprise merchant portal & payment gateway console
         </p>
       </div>
 

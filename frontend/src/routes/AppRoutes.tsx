@@ -9,7 +9,6 @@ import { SignupPage } from '../pages/auth/SignupPage';
 import { KycOnboardingPage } from '../pages/kyc/KycOnboardingPage';
 import { OverviewPage } from '../pages/dashboard/OverviewPage';
 import { TransactionsPage } from '../pages/payments/TransactionsPage';
-import { OrderCreationPage } from '../pages/payments/OrderCreationPage';
 import { ApiKeysPage } from '../pages/developers/ApiKeysPage';
 import { WebhooksPage } from '../pages/developers/WebhooksPage';
 import { AnomalyAlertsPage } from '../pages/risk/AnomalyAlertsPage';
@@ -39,9 +38,18 @@ export const AppRoutes: React.FC = () => {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
 
+      {/* Standalone Centered KYC Onboarding Flow (ChatGPT / Claude style) */}
+      <Route
+        path="/onboarding/kyc"
+        element={
+          <ProtectedRoute>
+            <KycOnboardingPage />
+          </ProtectedRoute>
+        }
+      />
+
       {/* Authenticated Application Shell */}
       <Route
-        path="/*"
         element={
           <ProtectedRoute>
             <AppShell />
@@ -49,9 +57,6 @@ export const AppRoutes: React.FC = () => {
         }
       >
         <Route path="app" element={<HomeRedirect />} />
-
-        {/* KYC Onboarding (Always accessible to authenticated merchants) */}
-        <Route path="onboarding/kyc" element={<KycOnboardingPage />} />
 
         {/* Features locked until KYC is approved */}
         <Route
@@ -94,11 +99,17 @@ export const AppRoutes: React.FC = () => {
             </KycGuardRoute>
           }
         />
-
-        {/* Sandbox simulator & Ops review console */}
-        <Route path="checkout-demo" element={<OrderCreationPage />} />
-        <Route path="ops/kyc-review" element={<OpsReviewPage />} />
       </Route>
+
+      {/* Standalone Operations KYC Review (Internal) */}
+      <Route
+        path="/ops/kyc-review"
+        element={
+          <ProtectedRoute>
+            <OpsReviewPage />
+          </ProtectedRoute>
+        }
+      />
 
       {/* Catch-all redirect */}
       <Route path="*" element={<Navigate to="/" replace />} />

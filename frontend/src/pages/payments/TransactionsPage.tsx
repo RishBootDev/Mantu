@@ -4,7 +4,6 @@ import {
   Eye,
   XCircle,
   RefreshCw,
-  Plus,
 } from 'lucide-react';
 import { Card } from '../../components/common/Card';
 import { Badge } from '../../components/common/Badge';
@@ -13,7 +12,6 @@ import { Modal } from '../../components/common/Modal';
 import { paymentsApi } from '../../api/payments';
 import { PaymentResponse } from '../../types/api';
 import { useToast } from '../../components/common/Toast';
-import { useNavigate } from 'react-router-dom';
 
 export const TransactionsPage: React.FC = () => {
   const [payments, setPayments] = useState<PaymentResponse[]>([]);
@@ -24,7 +22,6 @@ export const TransactionsPage: React.FC = () => {
   const [selectedPayment, setSelectedPayment] = useState<PaymentResponse | null>(null);
 
   const { showToast } = useToast();
-  const navigate = useNavigate();
 
   const loadData = async () => {
     try {
@@ -83,19 +80,7 @@ export const TransactionsPage: React.FC = () => {
           >
             Refresh
           </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => navigate('/checkout-demo')}
-            leftIcon={<Plus className="w-3.5 h-3.5" />}
-          >
-            Simulate Checkout
-          </Button>
         </div>
-      </div>
-
-      <div className="rounded border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
-        Demo history: the supplied gateway contract does not expose a transaction-listing or refund endpoint. Records shown here are local checkout-simulator activity.
       </div>
 
       {/* Filter Toolbar */}

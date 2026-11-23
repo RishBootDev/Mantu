@@ -6,7 +6,6 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { useEnvironment } from '../../context/EnvironmentContext';
 import { Badge } from '../common/Badge';
 
 interface TopbarProps {
@@ -16,7 +15,6 @@ interface TopbarProps {
 
 export const Topbar: React.FC<TopbarProps> = ({ onMenuClick, title }) => {
   const { email, businessName, merchantStatus, kycStatus, logout } = useAuth();
-  const { environment, toggleEnvironment, isTestMode } = useEnvironment();
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   return (
@@ -36,24 +34,6 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick, title }) => {
       </div>
 
       <div className="flex items-center gap-3">
-        {/* Environment Status Pill */}
-        <button
-          onClick={toggleEnvironment}
-          className={`flex items-center gap-2 px-2.5 py-1 rounded text-xs font-medium border transition-colors ${
-            isTestMode
-              ? 'bg-amber-50 text-amber-900 border-amber-200 hover:bg-amber-100'
-              : 'bg-emerald-50 text-emerald-900 border-emerald-200 hover:bg-emerald-100'
-          }`}
-          title="Click to toggle Test/Live mode"
-        >
-          <span
-            className={`w-2 h-2 rounded-full ${
-              isTestMode ? 'bg-amber-500' : 'bg-emerald-500'
-            }`}
-          />
-          <span className="font-mono">{environment} MODE</span>
-        </button>
-
         {/* KYC Status indicator */}
         <Badge
           variant={kycStatus === 'APPROVED' ? 'success' : 'warning'}
@@ -79,11 +59,11 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick, title }) => {
             className="flex items-center gap-2 pl-2 pr-1.5 py-1.5 rounded hover:bg-slate-100 transition-colors"
           >
             <div className="w-7 h-7 rounded-full bg-slate-200 border border-slate-300 flex items-center justify-center text-xs font-semibold text-slate-700">
-              {businessName.charAt(0).toUpperCase()}
+              {(businessName || 'M').charAt(0).toUpperCase()}
             </div>
             <div className="text-left hidden md:block">
               <div className="text-xs font-semibold text-mantu-text leading-tight truncate max-w-[120px]">
-                {businessName}
+                {businessName || 'Merchant'}
               </div>
               <div className="text-[10px] text-mantu-muted font-mono leading-tight">
                 {email}

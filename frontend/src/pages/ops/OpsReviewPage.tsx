@@ -44,10 +44,14 @@ export const OpsReviewPage: React.FC = () => {
 
     try {
       setIsSubmitting(true);
-      await internalApi.submitKycDecision('mock_ops_token_123', {
-        decision,
-        note: decisionNote,
-      });
+      if (decision === 'APPROVED') {
+        await kycApi.approveDemo();
+      } else {
+        await internalApi.submitKycDecision('mock_ops_token_123', {
+          decision,
+          note: decisionNote,
+        });
+      }
 
       await refreshKycStatus();
       await loadKyc();
@@ -75,7 +79,7 @@ export const OpsReviewPage: React.FC = () => {
       </div>
 
       {/* Case Overview */}
-      <Card title="Merchant Submission Details" subtitle="Case ID: kyc_case_e4b2d56a">
+      <Card title="Merchant Submission Details" subtitle="Compliance Case Verification">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs mb-4">
           <div>
             <span className="text-mantu-muted block text-[10px] uppercase font-semibold">Legal Entity</span>
@@ -95,10 +99,10 @@ export const OpsReviewPage: React.FC = () => {
         <div>
           <h4 className="text-xs font-semibold text-mantu-text mb-2">Uploaded Document Dossier:</h4>
           <div className="space-y-2">
-            {kycData?.uploadedDocuments.length === 0 ? (
+            {(!kycData?.uploadedDocuments || kycData.uploadedDocuments.length === 0) ? (
               <p className="text-xs text-mantu-muted italic">Merchant has not uploaded documents yet.</p>
             ) : (
-              kycData?.uploadedDocuments.map((doc) => (
+              (kycData.uploadedDocuments || []).map((doc) => (
                 <div
                   key={doc.id}
                   className="flex items-center justify-between p-2.5 rounded bg-slate-50 border border-mantu-border text-xs"

@@ -7,12 +7,9 @@ import {
   KeyRound,
   Webhook,
   FileCheck,
-  CreditCard,
   ChevronRight,
-  Sliders,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import { useEnvironment } from '../../context/EnvironmentContext';
 import { Badge, BadgeVariant } from '../common/Badge';
 
 interface SidebarProps {
@@ -36,7 +33,6 @@ interface NavGroup {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const { merchantStatus, kycStatus, onboardingComplete } = useAuth();
-  const { environment, toggleEnvironment } = useEnvironment();
 
   const isKycApproved = onboardingComplete && merchantStatus === 'ACTIVE';
 
@@ -60,12 +56,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           to: '/transactions',
           icon: ArrowLeftRight,
           disabled: !isKycApproved,
-        },
-        {
-          label: 'Checkout Demo',
-          to: '/checkout-demo',
-          icon: CreditCard,
-          disabled: false, // always available for testing checkout
         },
       ],
     },
@@ -109,18 +99,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         },
       ],
     },
-    {
-      title: 'OPERATIONS (INTERNAL)',
-      items: [
-        {
-          label: 'Ops Review Portal',
-          to: '/ops/kyc-review',
-          icon: Sliders,
-          badge: 'Ops',
-          badgeVariant: 'neutral',
-        },
-      ],
-    },
   ];
 
   return (
@@ -139,7 +117,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
         }`}
       >
         {/* Brand Header */}
-        <div className="h-16 px-6 border-b border-mantu-border flex items-center justify-between">
+        <div className="h-16 px-6 border-b border-mantu-border flex items-center">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded bg-mantu-accent flex items-center justify-center text-white font-bold text-lg shadow-sm">
               M
@@ -149,17 +127,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
               <span className="text-[10px] text-mantu-muted block uppercase tracking-wider font-semibold">Gateway</span>
             </div>
           </div>
-          <button
-            onClick={toggleEnvironment}
-            title="Click to toggle Test/Live"
-            className={`px-2 py-0.5 rounded text-[11px] font-mono font-semibold transition-colors border ${
-              environment === 'TEST'
-                ? 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
-                : 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100'
-            }`}
-          >
-            {environment}
-          </button>
         </div>
 
         {/* KYC Gate Banner if pending */}

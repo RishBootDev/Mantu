@@ -127,7 +127,25 @@ public class MerchantKycService {
         kycCase.setReviewerTokenExpiresAt(null);
         if (decision == KycCaseStatus.APPROVED) {
             kycCase.getMerchant().setStatus(MerchantStatus.ACTIVE);
+            merchantRepository.save(kycCase.getMerchant());
         }
+        return response(kycCase, documents(kycCase));
+    }
+
+    @Transactional
+    public KycOnboardingResponse approveForMerchant(UUID merchantId) {
+        MerchantKycCase kycCase = requireCase(merchantId);
+        kycCase.setStatus(KycCaseStatus.APPROVED);
+        kycCase.setDecision(KycCaseStatus.APPROVED.name());
+        kycCase.setDecidedAt(LocalDateTime.now());
+        kycCase.setReviewedBy("demo-compliance-approver");
+        kycCase.setReviewerNote("Auto-approved for development/testing");
+        kycCase.setReviewerTokenHash(null);
+        kycCase.setReviewerTokenExpiresAt(null);
+        Merchant merchant = kycCase.getMerchant();
+        merchant.setStatus(MerchantStatus.ACTIVE);
+        merchantRepository.save(merchant);
+        kycCaseRepository.save(kycCase);
         return response(kycCase, documents(kycCase));
     }
 
@@ -144,6 +162,12 @@ public class MerchantKycService {
         MerchantKycCase kycCase = reviewCase(token);
         return documentRepository.findById(documentId).filter(item -> item.getKycCase().getId().equals(kycCase.getId()))
                 .orElseThrow(() -> new ResourceNotFoundException("KYC document", documentId));
+    }
+
+    @Transactional
+    public List<MerchantKycDocument> documentsForReview(String token) {
+        MerchantKycCase kycCase = reviewCase(token);
+        return documents(kycCase);
     }
 
     private MerchantKycCase requireCase(UUID merchantId) {
