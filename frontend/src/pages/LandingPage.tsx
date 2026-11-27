@@ -21,7 +21,7 @@ const signals = [
 
 export const LandingPage: React.FC = () => (
   <main className="landing-shell relative min-h-screen overflow-hidden text-white selection:bg-cyan-300 selection:text-slate-950">
-    {/* Full Animated Video Background */}
+    {                                    }
     <video
       autoPlay
       loop
@@ -33,11 +33,11 @@ export const LandingPage: React.FC = () => (
       <source src="/landing%20page/motionsites-background-a70144cf.mp4" type="video/mp4" />
     </video>
 
-    {/* Ambient Dark Overlay to Guarantee Crisp Contrast & Legibility */}
+    {                                                                   }
     <div className="fixed inset-0 bg-slate-950/55 -z-10 pointer-events-none" />
     <div className="landing-grid fixed inset-0 opacity-25 -z-10 pointer-events-none" />
 
-    {/* Navigation */}
+    {                }
     <nav className="relative z-10 mx-auto flex max-w-7xl items-center justify-between px-6 py-6 lg:px-8">
       <Link to="/" className="flex items-center gap-3" aria-label="Mantu home">
         <span className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-cyan-300 to-blue-500 text-lg font-black text-slate-950 shadow-[0_0_30px_rgba(34,211,238,.45)]">
@@ -65,7 +65,7 @@ export const LandingPage: React.FC = () => (
       </div>
     </nav>
 
-    {/* Hero Section */}
+    {                  }
     <section className="relative z-10 mx-auto grid max-w-7xl items-center gap-14 px-6 pb-24 pt-12 lg:grid-cols-[1.05fr_.95fr] lg:px-8 lg:pb-32 lg:pt-20">
       <div className="landing-rise">
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-cyan-300/40 bg-cyan-400/15 px-3.5 py-1.5 text-xs font-semibold text-cyan-200 backdrop-blur-md shadow-sm">
@@ -102,7 +102,7 @@ export const LandingPage: React.FC = () => (
         </div>
       </div>
 
-      {/* Hero Visual Card */}
+      {                      }
       <div className="landing-rise landing-delay relative mx-auto w-full max-w-xl">
         <div className="absolute -inset-10 rounded-full bg-cyan-400/15 blur-3xl pointer-events-none" />
         <div className="relative overflow-hidden rounded-2xl border border-white/20 bg-slate-950/70 p-5 shadow-2xl shadow-black/60 backdrop-blur-2xl">
@@ -146,7 +146,7 @@ export const LandingPage: React.FC = () => (
           </div>
         </div>
 
-        {/* Floating Success Pill */}
+        {                           }
         <div className="landing-float absolute -bottom-6 -left-4 flex items-center gap-3 rounded-xl border border-white/25 bg-slate-950/85 px-4 py-3 shadow-2xl backdrop-blur-xl">
           <span className="grid h-9 w-9 place-items-center rounded-lg bg-emerald-400/25 border border-emerald-400/30">
             <BadgeCheck className="h-5 w-5 text-emerald-300" />
@@ -159,7 +159,7 @@ export const LandingPage: React.FC = () => (
       </div>
     </section>
 
-    {/* Platform Features Section */}
+    {                               }
     <section id="platform" className="relative z-10 border-y border-white/15 bg-slate-950/45 backdrop-blur-lg">
       <div className="mx-auto grid max-w-7xl gap-6 px-6 py-20 md:grid-cols-3 lg:px-8">
         {signals.map(([title, description], index) => {
@@ -180,7 +180,7 @@ export const LandingPage: React.FC = () => (
       </div>
     </section>
 
-    {/* Security Section */}
+    {                      }
     <section id="security" className="relative z-10 mx-auto max-w-7xl px-6 py-20 lg:px-8" aria-label="Security">
       <div className="rounded-2xl border border-white/20 bg-gradient-to-br from-slate-900/85 via-slate-950/90 to-black/90 p-8 sm:p-12 backdrop-blur-xl shadow-2xl">
         <p className="text-xs font-bold uppercase tracking-wider text-cyan-300">

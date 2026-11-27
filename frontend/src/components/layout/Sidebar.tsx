@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom';
 import {
   LayoutDashboard,
   ArrowLeftRight,
-  ShieldAlert,
   KeyRound,
   Webhook,
   FileCheck,
@@ -60,17 +59,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       ],
     },
     {
-      title: 'RISK & MONITORING',
-      items: [
-        {
-          label: 'Anomaly Alerts',
-          to: '/risk-monitoring',
-          icon: ShieldAlert,
-          disabled: !isKycApproved,
-        },
-      ],
-    },
-    {
       title: 'DEVELOPERS',
       items: [
         {
@@ -92,7 +80,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
       items: [
         {
           label: 'KYC Verification',
-          to: '/onboarding/kyc',
+          to: isKycApproved ? '/kyc-verified' : '/onboarding/kyc',
           icon: FileCheck,
           badge: kycStatus === 'APPROVED' ? 'Verified' : 'Action Required',
           badgeVariant: kycStatus === 'APPROVED' ? 'success' : 'warning',
@@ -103,7 +91,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {/* Mobile overlay */}
+      {                    }
       {isOpen && (
         <div
           className="fixed inset-0 z-30 bg-slate-900/40 lg:hidden"
@@ -116,20 +104,35 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        {/* Brand Header */}
-        <div className="h-16 px-6 border-b border-mantu-border flex items-center">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded bg-mantu-accent flex items-center justify-center text-white font-bold text-lg shadow-sm">
-              M
-            </div>
-            <div>
-              <span className="font-bold text-base tracking-tight text-mantu-text">MANTU</span>
-              <span className="text-[10px] text-mantu-muted block uppercase tracking-wider font-semibold">Gateway</span>
-            </div>
+        {/* Brand wordmark */}
+        <div className="h-[72px] px-5 border-b border-mantu-border flex items-center">
+          <div className="flex flex-col leading-none select-none gap-[6px]">
+            {/* "Mantu" — crisp italic serif with vibrant multi-colour gradient */}
+            <span
+              className="mantu-wordmark"
+              style={{ fontSize: '1.9rem', letterSpacing: '-0.015em', lineHeight: 1.05 }}
+            >
+              Mantu
+            </span>
+            {/* "Payment Gateway" — Space Grotesk, spaced caps */}
+            <span
+              style={{
+                fontFamily: "'Space Grotesk', 'Inter', sans-serif",
+                fontWeight: 500,
+                fontSize: '0.6rem',
+                letterSpacing: '0.26em',
+                color: '#475569',
+                textTransform: 'uppercase',
+                lineHeight: 1,
+                paddingLeft: '0.06em',
+              }}
+            >
+              Payment&nbsp;Gateway
+            </span>
           </div>
         </div>
 
-        {/* KYC Gate Banner if pending */}
+        {                                }
         {!isKycApproved && (
           <div className="mx-3 my-3 p-3 rounded bg-amber-50 border border-amber-200">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-900">
@@ -148,7 +151,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           </div>
         )}
 
-        {/* Navigation list */}
+        {                     }
         <div className="flex-1 overflow-y-auto px-3 py-4 space-y-6">
           {navGroups.map((group) => (
             <div key={group.title}>
@@ -206,7 +209,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           ))}
         </div>
 
-        {/* Footer info */}
+        {                 }
         <div className="p-4 border-t border-mantu-border bg-slate-50/50">
           <div className="flex items-center justify-between text-xs text-mantu-muted">
             <span className="font-mono text-[11px]">API: Port 8080</span>

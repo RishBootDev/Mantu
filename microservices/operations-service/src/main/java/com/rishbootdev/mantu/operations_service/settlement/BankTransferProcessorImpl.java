@@ -14,7 +14,7 @@ public class BankTransferProcessorImpl implements BankTransferProcessor {
     @Override
     public BankTransferResult initiate(UUID settlementId, UUID merchantId, Money amount, String bankAccount, String ifsc) {
 
-        // call the Bank API
+                            
 
         String registrationRef = "TXN_" + RandomizerUtil.randomBase64(12);
 

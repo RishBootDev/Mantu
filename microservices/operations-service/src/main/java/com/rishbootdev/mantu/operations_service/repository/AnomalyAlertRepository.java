@@ -11,4 +11,8 @@ public interface AnomalyAlertRepository extends JpaRepository<AnomalyAlert, UUID
     boolean existsBySourceEventId(String sourceEventId);
 
     Page<AnomalyAlert> findAllByOrderByWindowStartDesc(Pageable pageable);
+
+    long countByStatus(String status);
+
+    long countByStatusAndSeverity(String status, String severity);
 }

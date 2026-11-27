@@ -10,9 +10,10 @@ import net.javacrumbs.shedlock.spring.annotation.SchedulerLock;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Map;
-import java.time.ZoneOffset;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -37,12 +38,13 @@ public class OutboxPoller {
 
                 String topic = kafkaProperties.topicFor(event.getAggregateType());
                 String key = extractMerchantId(event.getPayload());
+                LocalDateTime createdAt = event.getCreatedAt() != null ? event.getCreatedAt() : LocalDateTime.now(ZoneOffset.UTC);
                 Map<String, Object> envelope = Map.of(
                         "eventId", event.getId().toString(),
                         "eventType", event.getEventType(),
                         "aggregateType", event.getAggregateType(),
                         "aggregateId", event.getAggregateId(),
-                        "occurredAt", event.getCreatedAt().atOffset(ZoneOffset.UTC).toInstant().toString(),
+                        "occurredAt", createdAt.atOffset(ZoneOffset.UTC).toInstant().toString(),
                         "data", event.getPayload()
                 );
 
@@ -52,7 +54,7 @@ public class OutboxPoller {
 
 
             }catch (Exception e) {
-                    log.error("Outbox event failed, eventId: {}, attempts: {}", event.getId(), event.getAttempts());
+                    log.error("Outbox event failed, eventId: {}, attempts: {}, error: {}", event.getId(), event.getAttempts(), e.getMessage());
                     outboxResultHandler.handleEventFailed(event, e.getMessage());
             }
         }

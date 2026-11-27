@@ -3,6 +3,8 @@ package com.rishbootdev.mantu.payment_service.client.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.time.Instant;
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record FraudPredictionRequest(
         @JsonProperty("transaction_id") String transactionId,
@@ -13,6 +15,11 @@ public record FraudPredictionRequest(
         @JsonProperty("customer_id") String customerId,
         @JsonProperty("order_attempts") int orderAttempts,
         @JsonProperty("card_token_id") String cardTokenId,
-        @JsonProperty("transactions_last_10m") int transactionsLast10m
+        @JsonProperty("transactions_last_10m") int transactionsLast10m,
+        @JsonProperty("occurred_at") Instant occurredAt,
+        @JsonProperty("device_id") String deviceId,
+        @JsonProperty("ip_country") String ipCountry,
+        @JsonProperty("billing_country") String billingCountry,
+        @JsonProperty("email_domain") String emailDomain
 ) {
 }

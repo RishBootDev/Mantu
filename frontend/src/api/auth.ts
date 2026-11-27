@@ -13,7 +13,7 @@ export const authApi = {
       return res.data;
     } catch (err: any) {
       if (!err.response) {
-        // Fallback demo response for standalone/local development
+                                                                  
         const mock: MerchantResponse = {
           id: '',
           name: data.name,
@@ -40,13 +40,14 @@ export const authApi = {
       };
     } catch (err: any) {
       if (!err.response) {
-        // Fallback demo response for standalone/local development
+                                                                  
         const isKycApproved = localStorage.getItem('demo_kyc_approved') === 'true';
         const mock: LoginResponse = {
           token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.mantu_demo_token',
           merchantStatus: isKycApproved ? 'ACTIVE' : 'PENDING_KYC',
           kycStatus: isKycApproved ? 'APPROVED' : 'DRAFT',
           onboardingComplete: isKycApproved,
+          role: 'OWNER',
         };
         return mock;
       }

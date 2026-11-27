@@ -5,7 +5,7 @@ from app.core.config import get_settings
 
 async def run() -> None:
     settings = get_settings()
-    # TODO:
+           
 
     print(
         "KYC worker scaffold. Configure consumer for "

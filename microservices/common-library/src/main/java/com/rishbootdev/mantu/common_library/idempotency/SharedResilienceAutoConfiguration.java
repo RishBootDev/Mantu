@@ -33,6 +33,7 @@ public class SharedResilienceAutoConfiguration {
     }
 
     @Bean
+    @ConditionalOnProperty(name = "app.idempotency.enabled", havingValue = "true", matchIfMissing = true)
     public IdempotencyFilter idempotencyFilter(MerchantContext merchantContext,
                              IdempotencyStore idempotencyStore,
                              @Qualifier("handlerExceptionResolver") HandlerExceptionResolver handlerExceptionResolver) {

@@ -6,11 +6,31 @@ import {
 
 const DEFAULT_WEBHOOKS: WebhookConfigResponse[] = [];
 
+function normalizeWebhook(raw: any): WebhookConfigResponse {
+  const eventTypes: string[] = Array.isArray(raw.eventTypes)
+    ? raw.eventTypes
+    : typeof raw.eventTypes === 'string'
+      ? raw.eventTypes
+          .split(',')
+          .map((s: string) => s.trim())
+          .filter(Boolean)
+      : [];
+
+  return {
+    id: raw.id,
+    targetUrl: raw.targetUrl,
+    enabled: Boolean(raw.enabled),
+    eventTypes,
+    rawSecret: raw.webhookSecret || raw.rawSecret || undefined,
+    createdAt: raw.createdAt || new Date().toISOString(),
+  };
+}
+
 export const webhooksApi = {
   async list(): Promise<WebhookConfigResponse[]> {
     try {
-      const res = await apiClient.get<WebhookConfigResponse[]>('/v1/merchants/webhooks');
-      return res.data;
+      const res = await apiClient.get<any[]>('/v1/merchants/webhooks');
+      return (res.data || []).map(normalizeWebhook);
     } catch (err: any) {
       if (!err.response) {
         const stored = localStorage.getItem('mantu_mock_webhooks');
@@ -22,8 +42,8 @@ export const webhooksApi = {
 
   async get(id: string): Promise<WebhookConfigResponse> {
     try {
-      const res = await apiClient.get<WebhookConfigResponse>(`/v1/merchants/webhooks/${id}`);
-      return res.data;
+      const res = await apiClient.get<any>(`/v1/merchants/webhooks/${id}`);
+      return normalizeWebhook(res.data);
     } catch (err: any) {
       if (!err.response) {
         const list = await this.list();
@@ -37,8 +57,12 @@ export const webhooksApi = {
 
   async create(data: UpdateWebhookConfigRequest): Promise<WebhookConfigResponse> {
     try {
-      const res = await apiClient.post<WebhookConfigResponse>('/v1/merchants/webhooks', data);
-      return res.data;
+      const payload = {
+        targetUrl: data.targetUrl,
+        eventTypes: data.eventTypes.join(','),
+      };
+      const res = await apiClient.post<any>('/v1/merchants/webhooks', payload);
+      return normalizeWebhook(res.data);
     } catch (err: any) {
       if (!err.response) {
         const secret = 'wbh_sec_' + Math.random().toString(36).substring(2, 16);
@@ -61,8 +85,12 @@ export const webhooksApi = {
 
   async update(id: string, data: UpdateWebhookConfigRequest): Promise<WebhookConfigResponse> {
     try {
-      const res = await apiClient.put<WebhookConfigResponse>(`/v1/merchants/webhooks/${id}`, data);
-      return res.data;
+      const payload = {
+        targetUrl: data.targetUrl,
+        eventTypes: data.eventTypes.join(','),
+      };
+      const res = await apiClient.put<any>(`/v1/merchants/webhooks/${id}`, payload);
+      return normalizeWebhook(res.data);
     } catch (err: any) {
       if (!err.response) {
         const existing = await this.list();

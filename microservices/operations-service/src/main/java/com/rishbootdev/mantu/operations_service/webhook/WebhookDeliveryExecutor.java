@@ -94,7 +94,7 @@ public class WebhookDeliveryExecutor {
             event.setStatus(WebhookEventStatus.DEAD);
 
             webhookDlqRecorder.recordAfterAttemptsExhausted(event, error);
-            // dlq recordings
+                             
             return;
         }
 

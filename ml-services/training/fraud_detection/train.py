@@ -15,7 +15,7 @@ from sklearn.metrics import average_precision_score, brier_score_loss, roc_auc_s
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-from app.modules.fraud_detection.features import FEATURE_NAMES  # noqa: E402
+from app.modules.fraud_detection.features import FEATURE_NAMES              
 
 
 SOURCE_COLUMNS = [

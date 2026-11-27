@@ -44,13 +44,13 @@ export const Modal: React.FC<ModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
-      {/* Backdrop */}
+      {              }
       <div
         className="fixed inset-0 bg-slate-900/50 transition-opacity animate-in fade-in duration-200"
         onClick={onClose}
       />
 
-      {/* Modal Surface */}
+      {                   }
       <div
         className={`relative w-full ${widthStyles[maxWidth]} bg-white rounded-lg shadow-modal border border-mantu-border z-10 overflow-hidden transform transition-all animate-in zoom-in-95 duration-200`}
       >
@@ -68,7 +68,7 @@ export const Modal: React.FC<ModalProps> = ({
             <X className="w-4 h-4" />
           </button>
         </div>
-        <div className="p-6">{children}</div>
+        <div className="p-6 max-h-[82vh] overflow-y-auto">{children}</div>
       </div>
     </div>
   );

@@ -12,8 +12,8 @@ public class PublicRouteMatcher {
     private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     public boolean isPublic(String path){
-        // The token itself is unguessable, hashed at rest, short-lived, and
-        // decisions require a deliberate POST confirmation.
+                                                                            
+                                                            
         if (path.startsWith("/internal/kyc/review/")) {
             return true;
         }

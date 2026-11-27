@@ -2,6 +2,54 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Mantu brand wordmark ────────────────────────────────────────────────── */
+.mantu-wordmark {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-weight: 900;
+  background: linear-gradient(
+    115deg,
+    #1d4ed8 0%,
+    #7c3aed 35%,
+    #db2777 70%,
+    #ea580c 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── KYC Verified card animations ────────────────────────────────────────── */
+@keyframes kyc-card-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes kyc-check-draw {
+  0% {
+    stroke-dashoffset: 32;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.kyc-verified-card {
+  animation: kyc-card-enter 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.kyc-check-path {
+  stroke-dasharray: 32;
+  stroke-dashoffset: 32;
+  animation: kyc-check-draw 0.55s cubic-bezier(0.65, 0, 0.35, 1) 0.2s forwards;
+}
+
 @layer base {
   body {
     @apply bg-mantu-bg text-mantu-text font-sans antialiased;
@@ -14,7 +62,7 @@
   }
 }
 
-/* Custom scrollbars for data tables and modals */
+                                                  
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

@@ -4,6 +4,7 @@ package com.rishbootdev.mantu.payment_service.service;
 import com.rishbootdev.mantu.payment_service.dto.request.PaymentInitRequest;
 import com.rishbootdev.mantu.payment_service.dto.response.PaymentResponse;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface PaymentService {
@@ -11,6 +12,10 @@ public interface PaymentService {
     PaymentResponse initiate(UUID merchantId, PaymentInitRequest request, String idempotencyKey);
 
     PaymentResponse capture(UUID merchantId, UUID paymentId);
+
+    PaymentResponse getById(UUID merchantId, UUID paymentId);
+
+    List<PaymentResponse> listByMerchantId(UUID merchantId);
 
     void resolveAuthorization(UUID paymentId, boolean approve, String bankRef, String errorCode, String errorDescription);
 }

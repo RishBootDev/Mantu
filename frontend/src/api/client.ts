@@ -17,7 +17,7 @@ apiClient.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Auto-attach Idempotency key for payment/order POST operations
+                                                                    
     if (
       config.method === 'post' &&
       (config.url?.includes('/payments') || config.url?.includes('/orders'))
@@ -37,7 +37,7 @@ apiClient.interceptors.response.use(
   (error: AxiosError<BackendErrorResponse>) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('mantu_auth_token');
-      // Only redirect if not already on login/signup page
+                                                          
       if (
         !window.location.pathname.includes('/login') &&
         !window.location.pathname.includes('/signup')

@@ -35,7 +35,7 @@ export const KycOnboardingPage: React.FC = () => {
       const res = await kycApi.getStatus();
       setKycData(res);
       if (res.kycStatus === 'APPROVED' && res.onboardingComplete) {
-        navigate('/dashboard');
+        navigate('/kyc-verified', { replace: true });
       }
     } catch (err: any) {
       console.error(err);
@@ -146,7 +146,7 @@ export const KycOnboardingPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col justify-between">
-      {/* Top Navigation Bar with Brand & Logout */}
+      {                                            }
       <header className="h-16 px-6 sm:px-8 bg-white border-b border-slate-200 flex items-center justify-between sticky top-0 z-20">
         <div className="flex items-center gap-2.5">
           <div className="w-8 h-8 rounded bg-mantu-accent flex items-center justify-center text-white font-bold text-lg shadow-sm">
@@ -178,11 +178,11 @@ export const KycOnboardingPage: React.FC = () => {
         </div>
       </header>
 
-      {/* Main Centered Onboarding Card */}
+      {                                   }
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
         <div className="max-w-2xl w-full bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden">
           
-          {/* Card Header */}
+          {                 }
           <div className="p-6 border-b border-slate-100 bg-slate-50/50">
             <div className="flex items-center justify-between gap-4 mb-2">
               <div className="flex items-center gap-2">
@@ -229,7 +229,7 @@ export const KycOnboardingPage: React.FC = () => {
               To comply with payment regulations and unlock live gateway API keys, please upload the 4 mandatory business documents below.
             </p>
 
-            {/* Progress Bar */}
+            {                  }
             <div className="mt-4">
               <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1.5">
                 <span>Verification Checklist</span>
@@ -244,9 +244,9 @@ export const KycOnboardingPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Card Body */}
+          {               }
           <div className="p-6 space-y-5">
-            {/* Reviewer Note if any */}
+            {                          }
             {kycData.reviewerNote && (
               <div className="p-3.5 rounded-lg border border-rose-200 bg-rose-50 flex items-start gap-3">
                 <ShieldAlert className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
@@ -257,7 +257,7 @@ export const KycOnboardingPage: React.FC = () => {
               </div>
             )}
 
-            {/* Approved Banner */}
+            {                     }
             {kycData.kycStatus === 'APPROVED' && (
               <div className="p-4 rounded-lg bg-emerald-50 border border-emerald-200 flex items-center justify-between">
                 <div className="flex items-center gap-3">
@@ -278,7 +278,7 @@ export const KycOnboardingPage: React.FC = () => {
               </div>
             )}
 
-            {/* Document Upload Grid */}
+            {                          }
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <DocumentUploadDropzone
                 type="PAN"
@@ -322,7 +322,7 @@ export const KycOnboardingPage: React.FC = () => {
             )}
           </div>
 
-          {/* Card Footer */}
+          {                 }
           <div className="p-5 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="text-xs text-slate-500 flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-slate-400" />
@@ -361,7 +361,7 @@ export const KycOnboardingPage: React.FC = () => {
         </div>
       </main>
 
-      {/* Footer copyright */}
+      {                      }
       <footer className="py-4 text-center text-[11px] text-slate-400 font-mono">
         &copy; {new Date().getFullYear()} Mantu Payment Technologies Inc. All rights reserved.
       </footer>

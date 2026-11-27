@@ -145,7 +145,7 @@ export const ApiKeysPage: React.FC = () => {
         </Button>
       </div>
 
-      {/* Keys Table Card */}
+      {                     }
       <Card noPadding>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
@@ -228,7 +228,7 @@ export const ApiKeysPage: React.FC = () => {
         </div>
       </Card>
 
-      {/* Generate Key Modal */}
+      {                        }
       <Modal
         isOpen={isGenerateOpen}
         onClose={() => setIsGenerateOpen(false)}
@@ -283,7 +283,7 @@ export const ApiKeysPage: React.FC = () => {
         </div>
       </Modal>
 
-      {/* ONE-TIME SECRET REVEAL MODAL */}
+      {                                  }
       {createdKeyData && (
         <Modal
           isOpen={!!createdKeyData}
@@ -333,14 +333,15 @@ export const ApiKeysPage: React.FC = () => {
                 <input
                   type="text"
                   readOnly
-                  value={createdKeyData.rawSecret}
+                  value={createdKeyData.keySecret || (createdKeyData as any).rawSecret || ''}
                   className="w-full px-3 py-2 text-xs font-mono bg-rose-50 border border-rose-200 text-rose-900 rounded select-all font-semibold"
                 />
                 <Button
                   variant="primary"
                   size="sm"
                   onClick={() => {
-                    navigator.clipboard.writeText(createdKeyData.rawSecret);
+                    const secretVal = createdKeyData.keySecret || (createdKeyData as any).rawSecret || '';
+                    navigator.clipboard.writeText(secretVal);
                     setCopiedSecret(true);
                     setTimeout(() => setCopiedSecret(false), 2000);
                   }}
@@ -359,7 +360,7 @@ export const ApiKeysPage: React.FC = () => {
         </Modal>
       )}
 
-      {/* Rotate Confirmation Modal */}
+      {                               }
       {keyToRotate && (
         <Modal
           isOpen={!!keyToRotate}
@@ -383,7 +384,7 @@ export const ApiKeysPage: React.FC = () => {
         </Modal>
       )}
 
-      {/* Revoke Confirmation Modal */}
+      {                               }
       {keyToRevoke && (
         <Modal
           isOpen={!!keyToRevoke}

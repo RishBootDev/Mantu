@@ -37,7 +37,9 @@ export const LoginPage: React.FC = () => {
       login(res, email);
       showToast('Logged in successfully', 'success');
 
-      if (!res.onboardingComplete || res.merchantStatus === 'PENDING_KYC') {
+      if (res.role === 'MANTU_OPS_ADMIN') {
+        navigate('/ops/risk');
+      } else if (!res.onboardingComplete || res.merchantStatus === 'PENDING_KYC') {
         navigate('/onboarding/kyc');
       } else {
         navigate('/dashboard');

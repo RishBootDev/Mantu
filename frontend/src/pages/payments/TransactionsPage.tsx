@@ -26,7 +26,7 @@ export const TransactionsPage: React.FC = () => {
   const loadData = async () => {
     try {
       setIsLoading(true);
-      const data = paymentsApi.getLocalDemoHistory();
+      const data = await paymentsApi.list();
       setPayments(data);
     } catch (err) {
       console.error(err);
@@ -63,7 +63,7 @@ export const TransactionsPage: React.FC = () => {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
+      {                 }
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-mantu-text">Payments & Transactions</h2>
@@ -83,7 +83,7 @@ export const TransactionsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Filter Toolbar */}
+      {                    }
       <div className="bg-white p-3.5 rounded border border-mantu-border shadow-xs flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-3 flex-1 min-w-[240px]">
           <div className="relative flex-1">
@@ -97,7 +97,7 @@ export const TransactionsPage: React.FC = () => {
             />
           </div>
 
-          {/* Status Dropdown */}
+          {                     }
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
@@ -105,11 +105,12 @@ export const TransactionsPage: React.FC = () => {
           >
             <option value="ALL">All Statuses</option>
             <option value="CAPTURED">CAPTURED</option>
+            <option value="SETTLED">SETTLED</option>
             <option value="FAILED">FAILED</option>
             <option value="AUTHORIZING">AUTHORIZING</option>
           </select>
 
-          {/* Method Dropdown */}
+          {                     }
           <select
             value={methodFilter}
             onChange={(e) => setMethodFilter(e.target.value)}
@@ -127,7 +128,7 @@ export const TransactionsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Transactions Table Card */}
+      {                             }
       <Card noPadding>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
@@ -218,7 +219,7 @@ export const TransactionsPage: React.FC = () => {
         </div>
       </Card>
 
-      {/* Transaction Detail & Raw JSON Modal */}
+      {                                         }
       {selectedPayment && (
         <Modal
           isOpen={!!selectedPayment}

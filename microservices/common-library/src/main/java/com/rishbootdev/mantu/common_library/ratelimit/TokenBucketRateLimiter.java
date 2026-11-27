@@ -9,14 +9,14 @@ import org.springframework.data.redis.core.script.RedisScript;
 
 import java.util.List;
 
-/**
- * Token bucket rate limiter: capacity == maxRequests, refill rate == maxRequests / windowSeconds
- * tokens/sec. Unlike the fixed window, tokens trickle back continuously instead of resetting all
- * at once at a window boundary, so it doesn't allow a burst of 2x maxRequests around the edge of
- * two windows. State (tokens remaining, last refill timestamp) lives in a Redis hash; refill +
- * consume is done atomically in a single Lua script so two concurrent requests for the same key
- * can't both read the same "tokens available" snapshot and both be allowed through.
- */
+   
+                                                                                                 
+                                                                                                 
+                                                                                                 
+                                                                                               
+                                                                                                
+                                                                                    
+   
 @Slf4j
 @RequiredArgsConstructor
 public class TokenBucketRateLimiter implements RateLimiter {
@@ -65,7 +65,7 @@ public class TokenBucketRateLimiter implements RateLimiter {
         try {
             String redisKey = "ratelimit:bucket:" + key;
             double refillPerSec = (double) maxRequests / windowSeconds;
-            // keep bucket state around for two windows of inactivity before Redis reclaims it
+                                                                                              
             long ttlSeconds = windowSeconds * 2;
 
             List<Long> result = redis.execute(SCRIPT,

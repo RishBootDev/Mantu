@@ -11,6 +11,7 @@ import com.rishbootdev.mantu.merchant_service.dto.response.LoginResponse;
 import com.rishbootdev.mantu.merchant_service.dto.response.MerchantResponse;
 import com.rishbootdev.mantu.merchant_service.entity.AppUser;
 import com.rishbootdev.mantu.merchant_service.entity.Merchant;
+import com.rishbootdev.mantu.merchant_service.kyc.KycCaseStatus;
 import com.rishbootdev.mantu.merchant_service.mapper.MerchantMapper;
 import com.rishbootdev.mantu.merchant_service.repository.AppUserRepository;
 import com.rishbootdev.mantu.merchant_service.repository.MerchantRepository;
@@ -72,8 +73,19 @@ public class AuthServiceImpl implements AuthService {
             throw new BusinessRuleViolationException("INVALID_CREDENTIALS", "Invalid email or password");
         }
 
-        String token = jwtUtil.generateAccessToken(request.email(), appUser.getMerchant().getId(), appUser.getRole().toString());
+        String token = jwtUtil.generateAccessToken(
+                request.email(),
+                appUser.getMerchant() == null ? null : appUser.getMerchant().getId(),
+                appUser.getRole().toString()
+        );
+
+        if (appUser.getRole() == UserRole.MANTU_OPS_ADMIN) {
+            return new LoginResponse(token, MerchantStatus.ACTIVE, KycCaseStatus.APPROVED, true,
+                    appUser.getRole().toString());
+        }
+
         var onboarding = merchantKycService.status(appUser.getMerchant().getId());
-        return new LoginResponse(token, onboarding.merchantStatus(), onboarding.kycStatus(), onboarding.onboardingComplete());
+        return new LoginResponse(token, onboarding.merchantStatus(), onboarding.kycStatus(), onboarding.onboardingComplete(),
+                appUser.getRole().toString());
     }
 }

@@ -108,7 +108,7 @@ export const WebhooksPage: React.FC = () => {
         </Button>
       </div>
 
-      {/* Webhook Endpoints Table */}
+      {                             }
       <Card noPadding>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
@@ -181,7 +181,7 @@ export const WebhooksPage: React.FC = () => {
         </div>
       </Card>
 
-      {/* Webhook Signature Verification Guide Card */}
+      {                                               }
       <Card title="Webhook Signature Verification" subtitle="HMAC SHA-256 Authentication Guide">
         <p className="text-xs text-mantu-muted leading-relaxed mb-3">
           Every HTTP POST from Mantu includes header <code className="font-mono font-semibold text-mantu-text">X-Mantu-Signature</code>. Validate this signature against your webhook secret before processing orders in your server.
@@ -209,7 +209,7 @@ app.post('/mantu-webhook', (req, res) => {
         </div>
       </Card>
 
-      {/* Add Webhook Modal */}
+      {                       }
       <Modal
         isOpen={isAddOpen}
         onClose={() => setIsAddOpen(false)}
@@ -277,7 +277,7 @@ app.post('/mantu-webhook', (req, res) => {
         </form>
       </Modal>
 
-      {/* Secret Reveal Modal */}
+      {                         }
       {newWebhookSecret && (
         <Modal
           isOpen={!!newWebhookSecret}

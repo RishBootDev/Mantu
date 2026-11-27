@@ -15,20 +15,20 @@ public class SlidingWindowLuaLimiter implements RateLimiter {
 
     private final StringRedisTemplate redis;
 
-    /**
-     * Atomic sliding window via Lua.
-     * KEYS[1] = redis key
-     * ARGV[1] = now in milliseconds
-     * ARGV[2] = window floor in milliseconds (now - windowMs)
-     * ARGV[3] = max requests
-     * ARGV[4] = window TTL in seconds (for EXPIRE)
-     * ARGV[5] = unique member id for this request
-     *
-     * Returns a three-element array:
-     *   [0] = 1 (allowed) or 0 (denied)
-     *   [1] = remaining count (maxRequests - count after add, or 0 if denied)
-     *   [2] = score of the oldest member (used to compute Retry-After), or 0 if denied on empty set
-     */
+       
+                                     
+                          
+                                    
+                                                              
+                             
+                                                   
+                                                  
+      
+                                     
+                                        
+                                                                              
+                                                                                                    
+       
     private static final String SLIDING_WINDOW_LUA = """
             local key      = KEYS[1]
             local now      = tonumber(ARGV[1])
@@ -82,7 +82,7 @@ public class SlidingWindowLuaLimiter implements RateLimiter {
             );
 
             if (result == null || result.isEmpty()) {
-                // Redis unavailable — fail open
+                                                
                 return RateLimitResult.allowed(maxRequests);
             }
 

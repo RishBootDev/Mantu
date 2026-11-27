@@ -63,6 +63,21 @@ public class Payment extends BaseEntity {
     @Column(length = 100)
     private String selectedRouteId;
 
+    @Column(length = 64)
+    private String routingModelVersion;
+
+    private Boolean routingPlaceholder;
+
+    private Double fraudProbability;
+
+    @Column(length = 32)
+    private String fraudRiskLevel;
+
+    @Column(length = 64)
+    private String fraudModelVersion;
+
+    private Boolean fraudPlaceholder;
+
     @Column(length = 100)
     private String errorCode;
 

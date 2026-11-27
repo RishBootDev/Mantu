@@ -1,7 +1,7 @@
-// ==========================================
-// Mantu Payment Gateway - TypeScript API Contracts
-// Single Source of Truth
-// ==========================================
+                                             
+                                                   
+                         
+                                             
 
 export type BusinessType =
   | 'INDIVIDUAL'
@@ -14,6 +14,8 @@ export type BusinessType =
   | 'SOCIETY';
 
 export type MerchantStatus = 'PENDING_KYC' | 'ACTIVE' | 'SUSPENDED';
+
+export type UserRole = 'OWNER' | 'ADMIN' | 'TEAM' | 'MANTU_OPS_ADMIN';
 
 export type KycCaseStatus =
   | 'DRAFT'
@@ -45,13 +47,13 @@ export type PaymentStatus =
   | 'AUTH_EXPIRED';
 
 export interface Money {
-  amountUnits: number; // e.g. 50000 = ₹500.00
-  currency: string;    // "INR"
+  amountUnits: number;                        
+  currency: string;            
 }
 
-// ==========================================
-// Standard Error Response
-// ==========================================
+                                             
+                          
+                                             
 export interface BackendErrorResponse {
   errorCode: string;
   errorDescription: string;
@@ -62,9 +64,9 @@ export interface BackendErrorResponse {
   }>;
 }
 
-// ==========================================
-// Authentication
-// ==========================================
+                                             
+                 
+                                             
 export interface MerchantSignupRequest {
   name: string;
   email: string;
@@ -94,11 +96,12 @@ export interface LoginResponse {
   merchantStatus: MerchantStatus;
   kycStatus: KycCaseStatus;
   onboardingComplete: boolean;
+  role?: UserRole;
 }
 
-// ==========================================
-// KYC Onboarding
-// ==========================================
+                                             
+                 
+                                             
 export interface KycDocumentResponse {
   id: string;
   documentType: KycDocumentType;
@@ -118,9 +121,9 @@ export interface KycOnboardingResponse {
   submittedAt: string | null;
 }
 
-// ==========================================
-// Developer API Keys & Webhooks
-// ==========================================
+                                             
+                                
+                                             
 export interface CreateApiKeyRequest {
   environment: 'TEST' | 'LIVE';
 }
@@ -128,7 +131,8 @@ export interface CreateApiKeyRequest {
 export interface ApiKeyCreateResponse {
   id: string;
   keyId: string;
-  rawSecret: string;
+                                                                   
+  keySecret: string;
   environment: 'TEST' | 'LIVE';
 }
 
@@ -155,7 +159,7 @@ export interface WebhookConfigResponse {
   createdAt: string;
 }
 
-// Outgoing webhook event model
+                               
 export interface OutgoingWebhookPayload {
   event: string;
   payload: {
@@ -171,9 +175,9 @@ export interface OutgoingWebhookPayload {
   };
 }
 
-// ==========================================
-// Orders & Payments (Checkout)
-// ==========================================
+                                             
+                               
+                                             
 export interface CreateOrderRequest {
   amount: Money;
   receipt?: string;
@@ -218,7 +222,7 @@ export interface TokenizeCardResponse {
 export interface PaymentInitRequest {
   orderId: string;
   method: PaymentMethod;
-  methodDetails: Record<string, any>; // e.g. { token: "..." } or { vpa: "..." } or { bank: "..." }
+  methodDetails: Record<string, any>;                                                              
 }
 
 export interface PaymentResponse {
@@ -236,9 +240,9 @@ export interface PaymentResponse {
   createdAt: string;
 }
 
-// ==========================================
-// Operations & Risk / ML Monitoring
-// ==========================================
+                                             
+                                    
+                                             
 export interface AnomalyAlert {
   id: string;
   merchantId: string;
@@ -259,7 +263,49 @@ export interface AnomalyAlertsResponse {
   totalPages: number;
 }
 
+export interface RiskDashboardAlert extends AnomalyAlert {}
+
+export interface OperationsRiskDashboard {
+  generatedAt: string;
+  payments: {
+    windowHours: number;
+    totalPayments: number;
+    fraudBlockedPayments: number;
+    failedPayments: number;
+    routedPayments: number;
+    routeDistribution: Record<string, number>;
+  };
+  anomalies: {
+    openAlerts: number;
+    criticalAlerts: number;
+  };
+  recentAlerts: RiskDashboardAlert[];
+}
+
 export interface KycDecisionRequest {
   decision: 'APPROVED' | 'REJECTED' | 'WAITLISTED';
   note?: string;
+}
+
+export interface OpsTransaction {
+  id: string;
+  orderId: string;
+  merchantId: string;
+  amountUnits: number;
+  currency: string;
+  status: PaymentStatus;
+  method: PaymentMethod;
+  methodDetails?: Record<string, any>;
+  selectedRouteId?: string | null;
+  routingModelVersion?: string | null;
+  routingPlaceholder?: boolean | null;
+  fraudProbability?: number | null;
+  fraudRiskLevel?: string | null;
+  fraudModelVersion?: string | null;
+  fraudPlaceholder?: boolean | null;
+  errorCode?: string | null;
+  errorDescription?: string | null;
+  bankReference?: string | null;
+  createdAt: string;
+  capturedAt?: string | null;
 }

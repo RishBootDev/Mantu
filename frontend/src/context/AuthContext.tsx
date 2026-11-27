@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { MerchantStatus, KycCaseStatus, LoginResponse } from '../types/api';
+import { MerchantStatus, KycCaseStatus, LoginResponse, UserRole } from '../types/api';
 import { kycApi } from '../api/kyc';
 
 interface AuthState {
@@ -9,6 +9,8 @@ interface AuthState {
   onboardingComplete: boolean;
   businessName: string;
   email: string;
+  role: UserRole;
+  isOpsAdmin: boolean;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (res: LoginResponse, email?: string) => void;
@@ -34,14 +36,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return localStorage.getItem('mantu_onboarding_complete') === 'true';
   });
   const [email, setEmail] = useState<string>(() => localStorage.getItem('mantu_user_email') || '');
+  const [role, setRole] = useState<UserRole>(() => (localStorage.getItem('mantu_user_role') as UserRole) || 'OWNER');
   const [businessName, setBusinessName] = useState<string>(() => localStorage.getItem('mantu_business_name') || '');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    if (token) {
+    if (token && role !== 'MANTU_OPS_ADMIN') {
       refreshKycStatus();
     }
-  }, [token]);
+  }, [token, role]);
 
   const updateBusinessName = (name: string) => {
     setBusinessName(name);
@@ -75,12 +78,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setMerchantStatus(res.merchantStatus);
     setKycStatus(res.kycStatus);
     setOnboardingComplete(res.onboardingComplete);
+    const nextRole = res.role || 'OWNER';
+    setRole(nextRole);
     if (userEmail) setEmail(userEmail);
 
     localStorage.setItem('mantu_auth_token', token);
     localStorage.setItem('mantu_merchant_status', res.merchantStatus);
     localStorage.setItem('mantu_kyc_status', res.kycStatus);
     localStorage.setItem('mantu_onboarding_complete', String(res.onboardingComplete));
+    localStorage.setItem('mantu_user_role', nextRole);
     if (userEmail) localStorage.setItem('mantu_user_email', userEmail);
   };
 
@@ -90,6 +96,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setKycStatus('DRAFT');
     setOnboardingComplete(false);
     setEmail('');
+    setRole('OWNER');
     setBusinessName('');
     localStorage.removeItem('mantu_auth_token');
     localStorage.removeItem('mantu_merchant_status');
@@ -97,6 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('mantu_onboarding_complete');
     localStorage.removeItem('mantu_user_email');
     localStorage.removeItem('mantu_business_name');
+    localStorage.removeItem('mantu_user_role');
   };
 
   return (
@@ -108,6 +116,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         onboardingComplete,
         businessName,
         email,
+        role,
+        isOpsAdmin: role === 'MANTU_OPS_ADMIN',
         isAuthenticated: !!token,
         isLoading,
         login,

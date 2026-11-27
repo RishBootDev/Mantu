@@ -7,7 +7,7 @@ import {
 const DEFAULT_ORDERS: OrderResponse[] = [];
 
 export const ordersApi = {
-  /** The gateway catalog currently defines order creation, not order history. */
+                                                                                 
   getLocalDemoHistory(): OrderResponse[] {
     const stored = localStorage.getItem('mantu_mock_orders');
     return stored ? JSON.parse(stored) : DEFAULT_ORDERS;

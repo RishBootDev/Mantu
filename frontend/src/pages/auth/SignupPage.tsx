@@ -33,7 +33,7 @@ export const SignupPage: React.FC = () => {
         businessType,
       });
 
-      // Auto-login into draft KYC onboarding
+                                             
       const loginRes = await authApi.login({ email, password });
       updateBusinessName(businessName);
       login(loginRes, email);

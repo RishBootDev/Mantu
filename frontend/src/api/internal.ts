@@ -2,6 +2,8 @@ import { apiClient } from './client';
 import {
   AnomalyAlertsResponse,
   KycDecisionRequest,
+  OperationsRiskDashboard,
+  OpsTransaction,
 } from '../types/api';
 
 const DEFAULT_ALERTS: AnomalyAlertsResponse = {
@@ -13,6 +15,20 @@ const DEFAULT_ALERTS: AnomalyAlertsResponse = {
 };
 
 export const internalApi = {
+  async getRiskDashboard(hours = 0): Promise<OperationsRiskDashboard> {
+    const res = await apiClient.get<OperationsRiskDashboard>(
+      `/internal/ops/risk-dashboard?hours=${hours}`
+    );
+    return res.data;
+  },
+
+  async getOpsTransactions(limit = 200): Promise<OpsTransaction[]> {
+    const res = await apiClient.get<OpsTransaction[]>(
+      `/internal/ops/risk-dashboard/transactions?limit=${limit}`
+    );
+    return res.data;
+  },
+
   async getAnomalyAlerts(page = 0, size = 50): Promise<AnomalyAlertsResponse> {
     try {
       const res = await apiClient.get<AnomalyAlertsResponse>(
@@ -33,7 +49,7 @@ export const internalApi = {
       await apiClient.post(`/internal/kyc/review/${token}/decision`, req);
     } catch (err: any) {
       if (!err.response) {
-        // In local mock mode, apply the decision to the local merchant state
+                                                                             
         const storedKyc = localStorage.getItem('mantu_mock_kyc');
         if (storedKyc) {
           const kyc = JSON.parse(storedKyc);

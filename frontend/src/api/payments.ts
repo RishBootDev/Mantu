@@ -9,14 +9,26 @@ import {
 const DEFAULT_PAYMENTS: PaymentResponse[] = [];
 
 export const paymentsApi = {
-  /**
-   * The supplied gateway contract has no payment-history endpoint. Keep the
-   * checkout simulator's local history separate from live gateway requests
-   * until the backend exposes an authenticated reporting endpoint.
-   */
+     
+                                                                            
+                                                                           
+                                                                   
+     
   getLocalDemoHistory(): PaymentResponse[] {
     const stored = localStorage.getItem('mantu_mock_payments');
     return stored ? JSON.parse(stored) : DEFAULT_PAYMENTS;
+  },
+
+  async list(): Promise<PaymentResponse[]> {
+    try {
+      const res = await apiClient.get<PaymentResponse[]>('/v1/payments');
+      return res.data;
+    } catch (err: any) {
+      if (!err.response) {
+        return this.getLocalDemoHistory();
+      }
+      throw err;
+    }
   },
 
   async tokenizeCard(req: TokenizeCardRequest): Promise<TokenizeCardResponse> {
@@ -49,8 +61,8 @@ export const paymentsApi = {
       return res.data;
     } catch (err: any) {
       if (!err.response) {
-        // ML Fraud Simulation Check:
-        // If card last 4 ends in 9999 or UPI contains 'fraud', trigger fraud block
+                                     
+                                                                                   
         const isFraudSimulation =
           (req.method === 'UPI' && req.methodDetails.vpa?.toLowerCase().includes('fraud')) ||
           (req.method === 'CARD' && req.methodDetails.token?.includes('9999'));

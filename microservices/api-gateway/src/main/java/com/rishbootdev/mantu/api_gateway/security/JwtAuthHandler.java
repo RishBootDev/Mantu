@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @Component
@@ -20,10 +21,13 @@ public class JwtAuthHandler {
             throw new GatewayAuthenticationException("Invalid or Expired token");
         }
 
-        return Map.of(
-                "X-Merchant-Id", jwtVerifier.extractMerchantId(claims),
-                "X-User-Role", jwtVerifier.extractRole(claims)
-        );
+        Map<String, String> headers = new LinkedHashMap<>();
+        String merchantId = jwtVerifier.extractMerchantId(claims);
+        if (merchantId != null && !merchantId.isBlank()) {
+            headers.put("X-Merchant-Id", merchantId);
+        }
+        headers.put("X-User-Role", jwtVerifier.extractRole(claims));
+        return headers;
     }
 
 }

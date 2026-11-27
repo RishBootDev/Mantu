@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -64,6 +65,13 @@ public class PaymentServiceImpl implements PaymentService {
         payment = paymentRepository.save(payment);
 
         FraudPredictionResponse fraudPrediction = fraudScreeningService.screen(payment);
+        if (fraudPrediction != null) {
+            payment.setFraudProbability(fraudPrediction.fraudProbability());
+            payment.setFraudRiskLevel(fraudPrediction.riskLevel());
+            payment.setFraudModelVersion(fraudPrediction.modelVersion());
+            payment.setFraudPlaceholder(fraudPrediction.placeholder());
+            payment = paymentRepository.save(payment);
+        }
         if (fraudDetectionProperties.getEnforcementMode()
                 == FraudDetectionProperties.EnforcementMode.BLOCK_HIGH_RISK
                 && fraudPrediction != null
@@ -77,8 +85,11 @@ public class PaymentServiceImpl implements PaymentService {
             );
         }
 
-        String selectedRouteId = smartRoutingService.selectRoute(payment);
+        SmartRoutingService.RoutingDecision routingDecision = smartRoutingService.recommendRoute(payment);
+        String selectedRouteId = routingDecision.routeId();
         payment.setSelectedRouteId(selectedRouteId);
+        payment.setRoutingModelVersion(routingDecision.modelVersion());
+        payment.setRoutingPlaceholder(routingDecision.placeholder());
         payment = paymentRepository.save(payment);
 
         PaymentRequest paymentRequest = new PaymentRequest(
@@ -106,8 +117,8 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     public PaymentResponse capture(UUID merchantId, UUID paymentId) {
 
-//        Payment payment = paymentRepository.findByIdAndMerchantId(paymentId, merchantId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Payment", paymentId));
+                                                                                          
+                                                                                          
         Payment payment = paymentRepository.findByIdAndMerchantIdForUpdate(paymentId, merchantId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", paymentId));
 
@@ -134,11 +145,27 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public PaymentResponse getById(UUID merchantId, UUID paymentId) {
+        Payment payment = paymentRepository.findByIdAndMerchantId(paymentId, merchantId)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", paymentId));
+        return paymentMapper.toResponse(payment);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<PaymentResponse> listByMerchantId(UUID merchantId) {
+        return paymentMapper.toResponseList(
+                paymentRepository.findByMerchantIdOrderByCreatedAtDesc(merchantId)
+        );
+    }
+
+    @Override
     @Transactional
     public void resolveAuthorization(UUID paymentId, boolean approve, String bankRef, String errorCode, String errorDescription) {
 
-//        Payment payment = paymentRepository.findById(paymentId)
-//                .orElseThrow(() -> new ResourceNotFoundException("Payment", paymentId));
+                                                                 
+                                                                                          
         Payment payment = paymentRepository.findByIdForUpdate(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", paymentId));
 
@@ -154,7 +181,7 @@ public class PaymentServiceImpl implements PaymentService {
             payment.setBankReference(bankRef);
             payment.setAuthorizedAt(LocalDateTime.now());
 
-            //Auto-Capture
+                          
             paymentTransitionService.apply(payment, PaymentEvent.CAPTURE_REQUEST);
             PaymentResult captureResult = paymentGatewayRouter.capture(payment.getMethod(), paymentId);
 

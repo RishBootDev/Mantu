@@ -15,7 +15,7 @@ from sklearn.metrics import average_precision_score, precision_recall_curve, roc
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-from app.modules.anomaly_detection.features import FEATURE_COLUMNS, feature_frame  # noqa: E402
+from app.modules.anomaly_detection.features import FEATURE_COLUMNS, feature_frame              
 
 EVENT_COLUMNS = [
     "event_type",

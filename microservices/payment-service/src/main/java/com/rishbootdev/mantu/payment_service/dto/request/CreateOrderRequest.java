@@ -14,7 +14,7 @@ public record CreateOrderRequest(
         Money amount,
 
         @Size(max = 100)
-        String receipt, //order-id (known to merchant)
+        String receipt,                               
 
         Map<String, Object> notes,
 
@@ -32,7 +32,10 @@ public record CreateOrderRequest(
                 String email,
 
                 @Size(max = 20)
-                String phone
+                String phone,
+
+                @Size(max = 3)
+                String country
         ){}
 
 }

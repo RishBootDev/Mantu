@@ -59,7 +59,7 @@ export const AnomalyAlertsPage: React.FC = () => {
         </Button>
       </div>
 
-      {/* Model Status Card */}
+      {                       }
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white p-4 rounded border border-mantu-border shadow-card flex items-center gap-3">
           <div className="w-9 h-9 rounded bg-blue-50 border border-blue-200 flex items-center justify-center text-mantu-accent">
@@ -94,7 +94,7 @@ export const AnomalyAlertsPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Alerts Stream Card */}
+      {                        }
       <div className="space-y-4">
         <h3 className="text-sm font-semibold text-mantu-text">Detected Anomalies</h3>
 

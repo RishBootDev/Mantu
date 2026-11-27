@@ -30,7 +30,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SettlementTransactionExecutor {
 
-    private static final double FEE_RATE = 0.02; // 2% fee rate
+    private static final double FEE_RATE = 0.02;               
     private static final double GST_RATE = 0.18;
     private final SettlementRepository settlementRepository;
     private final BankTransferProcessor bankTransferProcessor;
@@ -115,7 +115,7 @@ public class SettlementTransactionExecutor {
             return;
         }
 
-        if (errorCode == null){ // success
+        if (errorCode == null){           
             settlement.setStatus(SettlementStatus.PROCESSED);
             settlement.setProcessedAt(LocalDateTime.now());
             settlementRepository.save(settlement);

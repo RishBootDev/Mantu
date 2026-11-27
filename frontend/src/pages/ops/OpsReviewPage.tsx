@@ -78,7 +78,7 @@ export const OpsReviewPage: React.FC = () => {
         </p>
       </div>
 
-      {/* Case Overview */}
+      {                   }
       <Card title="Merchant Submission Details" subtitle="Compliance Case Verification">
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs mb-4">
           <div>
@@ -95,7 +95,7 @@ export const OpsReviewPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Uploaded Documents List */}
+        {                             }
         <div>
           <h4 className="text-xs font-semibold text-mantu-text mb-2">Uploaded Document Dossier:</h4>
           <div className="space-y-2">
@@ -126,7 +126,7 @@ export const OpsReviewPage: React.FC = () => {
         </div>
       </Card>
 
-      {/* Decision Console */}
+      {                      }
       <Card title="Compliance Officer Decision" subtitle="Will update merchant status in gateway registry">
         <div className="space-y-4">
           <div>

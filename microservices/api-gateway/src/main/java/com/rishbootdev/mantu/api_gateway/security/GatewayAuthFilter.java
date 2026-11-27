@@ -57,6 +57,11 @@ public class GatewayAuthFilter extends OncePerRequestFilter {
             }
 
             String merchantId = identityHeaders.get("X-Merchant-Id");
+            if (request.getRequestURI().startsWith("/internal/ops/")
+                    && !"MANTU_OPS_ADMIN".equals(identityHeaders.get("X-User-Role"))) {
+                reject(response, HttpStatus.FORBIDDEN, "OPS_ACCESS_REQUIRED", "Mantu operations access is required");
+                return;
+            }
             if (merchantId != null && !merchantOnboardingGate.permits(merchantId, request.getRequestURI())) {
                 reject(response, HttpStatus.FORBIDDEN, "KYC_REQUIRED", "Complete manual KYC approval to access payment features");
                 return;

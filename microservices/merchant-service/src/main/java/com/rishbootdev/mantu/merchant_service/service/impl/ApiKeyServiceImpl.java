@@ -44,7 +44,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
             throw new BusinessRuleViolationException("Complete manual KYC approval before creating API keys", "KYC_REQUIRED");
         }
 
-        String keyId = "rzp_"+request.environment().name().toLowerCase()+"_"+ RandomizerUtil.randomBase64(24);
+        String keyId = "mantu_"+request.environment().name().toLowerCase()+"_"+ RandomizerUtil.randomBase64(24);
         String rawSecret = RandomizerUtil.randomBase64(40);
 
         ApiKey apiKey = ApiKey.builder()
@@ -54,6 +54,7 @@ public class ApiKeyServiceImpl implements ApiKeyService {
                 .environment(request.environment())
                 .build();
 
+        log.info("the key id - " + keyId + " and the secret is - " + rawSecret);
         apiKeyRepository.save(apiKey);
         return new ApiKeyCreateResponse(apiKey.getId(), keyId, rawSecret, request.environment());
     }

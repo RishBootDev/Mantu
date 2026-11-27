@@ -24,14 +24,18 @@ public class JwtUtil {
 
     public String generateAccessToken(String email, UUID merchantId, String role){
         Instant now = Instant.now();
-        return Jwts.builder()
+        var builder = Jwts.builder()
                 .subject(email)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(now.plusSeconds(60*100)))
-                .claim("merchant_id", merchantId)
                 .claim("role", role)
-                .signWith(getSecretKey())
-                .compact();
+                .signWith(getSecretKey());
+
+        if (merchantId != null) {
+            builder.claim("merchant_id", merchantId.toString());
+        }
+
+        return builder.compact();
     }
 
     public Claims verifyAccessToken(String accessToken){

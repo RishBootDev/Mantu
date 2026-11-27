@@ -34,7 +34,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick, title }) => {
       </div>
 
       <div className="flex items-center gap-3">
-        {/* KYC Status indicator */}
+        {                          }
         <Badge
           variant={kycStatus === 'APPROVED' ? 'success' : 'warning'}
           dot
@@ -43,7 +43,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick, title }) => {
           {kycStatus === 'APPROVED' ? 'Merchant Active' : `KYC: ${kycStatus}`}
         </Badge>
 
-        {/* Notification Bell */}
+        {                       }
         <button
           className="relative text-mantu-muted hover:text-mantu-text p-2 rounded hover:bg-slate-100 transition-colors"
           title="Anomaly Alerts & Gateway Notifications"
@@ -52,7 +52,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onMenuClick, title }) => {
           <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full" />
         </button>
 
-        {/* Profile Dropdown */}
+        {                      }
         <div className="relative">
           <button
             onClick={() => setIsProfileOpen(!isProfileOpen)}

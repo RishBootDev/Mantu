@@ -7,20 +7,27 @@ import { AppShell } from '../components/layout/AppShell';
 import { LoginPage } from '../pages/auth/LoginPage';
 import { SignupPage } from '../pages/auth/SignupPage';
 import { KycOnboardingPage } from '../pages/kyc/KycOnboardingPage';
+import { KycVerifiedPage } from '../pages/kyc/KycVerifiedPage';
 import { OverviewPage } from '../pages/dashboard/OverviewPage';
 import { TransactionsPage } from '../pages/payments/TransactionsPage';
 import { ApiKeysPage } from '../pages/developers/ApiKeysPage';
 import { WebhooksPage } from '../pages/developers/WebhooksPage';
-import { AnomalyAlertsPage } from '../pages/risk/AnomalyAlertsPage';
 import { OpsReviewPage } from '../pages/ops/OpsReviewPage';
+import { OpsRiskDashboardPage } from '../pages/ops/OpsRiskDashboardPage';
+import { OpsTransactionsPage } from '../pages/ops/OpsTransactionsPage';
+import { OpsGuardRoute } from './OpsGuardRoute';
 import { LandingPage } from '../pages/LandingPage';
 import { useAuth } from '../context/AuthContext';
 
 const HomeRedirect: React.FC = () => {
-  const { isAuthenticated, merchantStatus, onboardingComplete } = useAuth();
+  const { isAuthenticated, merchantStatus, onboardingComplete, isOpsAdmin } = useAuth();
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (isOpsAdmin) {
+    return <Navigate to="/ops/risk" replace />;
   }
 
   if (merchantStatus === 'ACTIVE' && onboardingComplete) {
@@ -34,11 +41,11 @@ export const AppRoutes: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<LandingPage />} />
-      {/* Public Auth Routes */}
+      {                        }
       <Route path="/login" element={<LoginPage />} />
       <Route path="/signup" element={<SignupPage />} />
 
-      {/* Standalone Centered KYC Onboarding Flow (ChatGPT / Claude style) */}
+      {                                                                      }
       <Route
         path="/onboarding/kyc"
         element={
@@ -48,7 +55,7 @@ export const AppRoutes: React.FC = () => {
         }
       />
 
-      {/* Authenticated Application Shell */}
+      {                                     }
       <Route
         element={
           <ProtectedRoute>
@@ -58,7 +65,7 @@ export const AppRoutes: React.FC = () => {
       >
         <Route path="app" element={<HomeRedirect />} />
 
-        {/* Features locked until KYC is approved */}
+        {                                           }
         <Route
           path="dashboard"
           element={
@@ -92,16 +99,16 @@ export const AppRoutes: React.FC = () => {
           }
         />
         <Route
-          path="risk-monitoring"
+          path="kyc-verified"
           element={
             <KycGuardRoute>
-              <AnomalyAlertsPage />
+              <KycVerifiedPage />
             </KycGuardRoute>
           }
         />
       </Route>
 
-      {/* Standalone Operations KYC Review (Internal) */}
+      {                                                 }
       <Route
         path="/ops/kyc-review"
         element={
@@ -110,8 +117,10 @@ export const AppRoutes: React.FC = () => {
           </ProtectedRoute>
         }
       />
+      <Route path="/ops/risk" element={<OpsGuardRoute><OpsRiskDashboardPage /></OpsGuardRoute>} />
+      <Route path="/ops/transactions" element={<OpsGuardRoute><OpsTransactionsPage /></OpsGuardRoute>} />
 
-      {/* Catch-all redirect */}
+      {                        }
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

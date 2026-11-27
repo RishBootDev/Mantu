@@ -31,7 +31,7 @@ public class PaymentLookupServiceImpl implements PaymentLookupService {
                 .map(p -> new PaymentSettlementView(
                         p.getId(),
                         p.getAmount().getAmountUnits(),
-                        0, //TODO: replace with actual refund values from RefundRepository
+                        0,                                                                
                         p.getAmount().getCurrency()
                 )).toList();
     }

@@ -116,9 +116,9 @@ public class OrderServiceImpl implements OrderService {
                 .orElseThrow(() -> new ResourceNotFoundException("Order" , orderId));
 
         List<Payment> paymentList = paymentRepository.findByOrder_Id(orderId);
-//        return paymentList.stream()
-//                .map(payment -> paymentMapper.toResponse(payment))
-//                .collect(Collectors.toList());
+                                     
+                                                                    
+                                                
 
         return paymentMapper.toResponseList(paymentList);
     }

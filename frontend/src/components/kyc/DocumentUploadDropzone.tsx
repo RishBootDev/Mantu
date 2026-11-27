@@ -29,12 +29,12 @@ export const DocumentUploadDropzone: React.FC<DropzoneProps> = ({
 
   const handleFile = async (file: File) => {
     setErrorMsg(null);
-    // Validate size (10 MB max)
+                                
     if (file.size > 10 * 1024 * 1024) {
       setErrorMsg('File exceeds 10MB limit.');
       return;
     }
-    // Validate type
+                    
     const validExtensions = ['pdf', 'jpg', 'jpeg', 'png'];
     const ext = file.name.split('.').pop()?.toLowerCase();
     if (!ext || !validExtensions.includes(ext)) {

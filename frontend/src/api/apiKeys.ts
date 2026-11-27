@@ -45,7 +45,7 @@ export const apiKeysApi = {
         return {
           id: newKey.id,
           keyId: newKey.keyId,
-          rawSecret: randomSecret,
+          keySecret: randomSecret,
           environment: req.environment,
         };
       }
@@ -71,7 +71,7 @@ export const apiKeysApi = {
         return {
           id: target?.id || keyId,
           keyId: keyId,
-          rawSecret: newSecret,
+          keySecret: newSecret,
           environment: target?.environment || 'TEST',
         };
       }

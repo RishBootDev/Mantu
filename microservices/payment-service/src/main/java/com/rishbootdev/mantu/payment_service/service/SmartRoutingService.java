@@ -21,35 +21,47 @@ public class SmartRoutingService {
     private final SmartRoutingClient smartRoutingClient;
     private final SmartRoutingProperties properties;
 
+    public record RoutingDecision(String routeId, String modelVersion, boolean placeholder) {
+    }
+
     public String selectRoute(Payment payment) {
+        return recommendRoute(payment).routeId();
+    }
+
+    public RoutingDecision recommendRoute(Payment payment) {
         List<SmartRoutingProperties.RouteProfile> candidates = properties.getRoutes().stream()
                 .filter(route -> route.paymentMethod() == payment.getMethod())
                 .toList();
         if (candidates.isEmpty()) {
             log.warn("No configured route candidates for payment method={}", payment.getMethod());
-            return null;
+            return new RoutingDecision(null, "none", true);
         }
         String fallbackRoute = candidates.stream()
                 .max(Comparator.comparingDouble(SmartRoutingProperties.RouteProfile::healthScore))
                 .orElseThrow()
                 .routeId();
         if (!properties.isEnabled()) {
-            return fallbackRoute;
+            return new RoutingDecision(fallbackRoute, "deterministic_fallback", true);
         }
         try {
             RoutingRecommendationResponse response = smartRoutingClient.recommend(
                     toRequest(payment, candidates)
             );
             if (response.recommendedRouteId() == null) {
-                return fallbackRoute;
+                return new RoutingDecision(fallbackRoute, "deterministic_fallback", true);
             }
             log.info("Smart routing completed paymentId={}, routeId={}, modelVersion={}, placeholder={}",
                     payment.getId(), response.recommendedRouteId(), response.modelVersion(), response.placeholder());
-            return response.recommendedRouteId();
+            return new RoutingDecision(
+                    response.recommendedRouteId(),
+                    response.modelVersion(),
+                    response.placeholder()
+            );
         } catch (Exception exception) {
-            log.warn("Smart routing unavailable; using deterministic route paymentId={}, routeId={}",
-                    payment.getId(), fallbackRoute, exception);
-            return fallbackRoute;
+            log.warn("Smart routing unavailable; using deterministic route paymentId={}, routeId={}, reason={}",
+                    payment.getId(), fallbackRoute, exception.getMessage());
+            log.debug("Smart routing failure details", exception);
+            return new RoutingDecision(fallbackRoute, "deterministic_fallback", true);
         }
     }
 

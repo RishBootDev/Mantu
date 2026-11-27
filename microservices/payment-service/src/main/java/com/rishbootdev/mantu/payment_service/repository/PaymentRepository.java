@@ -4,6 +4,7 @@ package com.rishbootdev.mantu.payment_service.repository;
 import com.rishbootdev.mantu.common_library.enums.PaymentStatus;
 import com.rishbootdev.mantu.payment_service.entity.Payment;
 import jakarta.persistence.LockModeType;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -17,6 +18,8 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     List<Payment> findByOrder_Id(UUID orderId);
 
     Optional<Payment> findByIdAndMerchantId(UUID paymentId, UUID merchantId);
+
+    List<Payment> findByMerchantIdOrderByCreatedAtDesc(UUID merchantId);
 
     List<Payment> findByStatusAndCreatedAtBefore(PaymentStatus paymentStatus, LocalDateTime globalWindow);
 
@@ -33,4 +36,12 @@ public interface PaymentRepository extends JpaRepository<Payment, UUID> {
     List<Payment> findByMerchantIdAndStatusForUpdate(UUID merchantId, PaymentStatus paymentStatus);
 
     Optional<Payment> findByMerchantIdAndIdempotencyKey(UUID merchantId, String idempotencyKey);
+
+    List<Payment> findByCreatedAtGreaterThanEqual(LocalDateTime createdAt);
+
+    @Query("select p from Payment p join fetch p.order order by p.createdAt desc")
+    List<Payment> findAllRecentWithOrder(Pageable pageable);
+
+    @Query("select count(p) from Payment p where p.order.customerId = :customerId and p.createdAt >= :since")
+    long countRecentByCustomer(UUID customerId, LocalDateTime since);
 }

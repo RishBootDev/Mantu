@@ -6,9 +6,14 @@ import com.rishbootdev.mantu.payment_service.client.dto.FraudPredictionRequest;
 import com.rishbootdev.mantu.payment_service.client.dto.FraudPredictionResponse;
 import com.rishbootdev.mantu.payment_service.config.FraudDetectionProperties;
 import com.rishbootdev.mantu.payment_service.entity.Payment;
+import com.rishbootdev.mantu.payment_service.repository.PaymentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -17,6 +22,7 @@ public class FraudScreeningService {
 
     private final FraudDetectionClient fraudDetectionClient;
     private final FraudDetectionProperties properties;
+    private final PaymentRepository paymentRepository;
 
     public FraudPredictionResponse screen(Payment payment) {
         if (!properties.isEnabled()) {
@@ -28,13 +34,23 @@ public class FraudScreeningService {
                     payment.getId(), response.riskLevel(), response.modelVersion());
             return response;
         } catch (Exception exception) {
-            log.warn("Fraud score unavailable; continuing with configured fallback paymentId={}",
-                    payment.getId(), exception);
+            log.warn("Fraud score unavailable; continuing with configured fallback paymentId={}, reason={}",
+                    payment.getId(), exception.getMessage());
+            log.debug("Fraud score failure details", exception);
             return null;
         }
     }
 
     private FraudPredictionRequest toRequest(Payment payment) {
+        int velocity = 0;
+        if (payment.getOrder().getCustomerId() != null) {
+            long recentCount = paymentRepository.countRecentByCustomer(
+                    payment.getOrder().getCustomerId(),
+                    LocalDateTime.now().minusMinutes(10)
+            );
+            velocity = Math.max(0, (int) recentCount - 1);
+        }
+        Map<String, Object> details = payment.getMethodDetails();
         return new FraudPredictionRequest(
                 payment.getId().toString(),
                 payment.getMerchantId().toString(),
@@ -44,8 +60,21 @@ public class FraudScreeningService {
                 payment.getOrder().getCustomerId() == null ? null : payment.getOrder().getCustomerId().toString(),
                 payment.getOrder().getAttempts(),
                 cardToken(payment),
-                0
+                velocity,
+                Instant.now(),
+                stringDetail(details, "device_id"),
+                stringDetail(details, "ip_country"),
+                stringDetail(details, "billing_country"),
+                stringDetail(details, "email_domain")
         );
+    }
+
+    private String stringDetail(Map<String, Object> details, String key) {
+        if (details == null) {
+            return null;
+        }
+        Object value = details.get(key);
+        return value instanceof String str && !str.isBlank() ? str.trim() : null;
     }
 
     private String cardToken(Payment payment) {

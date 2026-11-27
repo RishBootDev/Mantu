@@ -17,7 +17,7 @@ from sklearn.preprocessing import OneHotEncoder
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-from app.modules.smart_routing.features import (  # noqa: E402
+from app.modules.smart_routing.features import (              
     CATEGORICAL_FEATURE_COLUMNS,
     NUMERIC_FEATURE_COLUMNS,
     build_training_features,

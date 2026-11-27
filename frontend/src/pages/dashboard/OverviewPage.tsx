@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   TrendingUp,
   CreditCard,
@@ -16,6 +16,177 @@ import { PaymentResponse } from '../../types/api';
 import { useAuth } from '../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+// ── Inline SVG Bar Chart ───────────────────────────────────────────────────
+interface VolumeBarChartProps {
+  data: { date: string; units: number }[];
+  formatRupees: (units: number) => string;
+}
+
+const VolumeBarChart: React.FC<VolumeBarChartProps> = ({ data, formatRupees }) => {
+  const [hovered, setHovered] = React.useState<number | null>(null);
+
+  const maxUnits = Math.max(...data.map((d) => d.units), 1);
+  const hasData = data.some((d) => d.units > 0);
+
+  if (!hasData) {
+    return (
+      <div className="h-64 w-full flex flex-col items-center justify-center border border-dashed border-slate-200 rounded">
+        <div className="text-center p-6">
+          <p className="text-xs font-semibold text-mantu-text">No transaction volume recorded</p>
+          <p className="text-[11px] text-mantu-muted mt-1">
+            Volume trends will appear here as transactions are processed.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  const W = 600;
+  const H = 220;
+  const paddingLeft = 72;
+  const paddingRight = 16;
+  const paddingTop = 12;
+  const paddingBottom = 44;
+  const chartW = W - paddingLeft - paddingRight;
+  const chartH = H - paddingTop - paddingBottom;
+  const barCount = data.length;
+  const barGap = Math.max(2, Math.floor(chartW / barCount * 0.18));
+  const barWidth = (chartW - barGap * (barCount - 1)) / barCount;
+
+  // Y-axis ticks
+  const yTicks = [0, 0.25, 0.5, 0.75, 1].map((f) => ({
+    frac: f,
+    label: formatRupees(Math.round(maxUnits * f)),
+    y: paddingTop + chartH - f * chartH,
+  }));
+
+  return (
+    <div className="h-64 w-full">
+      <svg
+        viewBox={`0 0 ${W} ${H}`}
+        width="100%"
+        height="100%"
+        className="overflow-visible"
+        style={{ fontFamily: 'inherit' }}
+      >
+        {/* Grid lines */}
+        {yTicks.map((t, i) => (
+          <line
+            key={i}
+            x1={paddingLeft}
+            x2={W - paddingRight}
+            y1={t.y}
+            y2={t.y}
+            stroke="#e2e8f0"
+            strokeWidth={i === 0 ? 1.5 : 0.75}
+            strokeDasharray={i === 0 ? undefined : '4 3'}
+          />
+        ))}
+
+        {/* Y-axis labels */}
+        {yTicks.map((t, i) => (
+          <text
+            key={i}
+            x={paddingLeft - 6}
+            y={t.y + 4}
+            textAnchor="end"
+            fontSize={9}
+            fill="#94a3b8"
+            fontFamily="ui-monospace, monospace"
+          >
+            {t.label}
+          </text>
+        ))}
+
+        {/* Bars */}
+        {data.map((d, i) => {
+          const barH = d.units === 0 ? 0 : Math.max(3, (d.units / maxUnits) * chartH);
+          const x = paddingLeft + i * (barWidth + barGap);
+          const y = paddingTop + chartH - barH;
+          const isHovered = hovered === i;
+          const shortDate = d.date.slice(5); // MM-DD
+          const label = `${shortDate.replace('-', '/')}`;
+
+          return (
+            <g key={d.date}>
+              {/* Hover highlight column */}
+              <rect
+                x={x - barGap / 2}
+                y={paddingTop}
+                width={barWidth + barGap}
+                height={chartH}
+                fill={isHovered ? '#eff6ff' : 'transparent'}
+                rx={2}
+              />
+              {/* Bar */}
+              <rect
+                x={x}
+                y={y}
+                width={barWidth}
+                height={barH}
+                rx={Math.min(3, barWidth / 4)}
+                fill={isHovered ? '#1e40af' : '#1d4ed8'}
+                opacity={isHovered ? 1 : 0.85}
+                onMouseEnter={() => setHovered(i)}
+                onMouseLeave={() => setHovered(null)}
+                style={{ cursor: 'default', transition: 'fill 0.1s, opacity 0.1s' }}
+              />
+              {/* Tooltip on hover */}
+              {isHovered && (
+                <g>
+                  <rect
+                    x={Math.min(x - 2, W - paddingRight - 90)}
+                    y={y - 36}
+                    width={Math.min(barWidth + 4, 92)}
+                    height={28}
+                    rx={4}
+                    fill="#1e293b"
+                    opacity={0.92}
+                  />
+                  <text
+                    x={Math.min(x + barWidth / 2, W - paddingRight - 46)}
+                    y={y - 25}
+                    textAnchor="middle"
+                    fontSize={8.5}
+                    fill="#94a3b8"
+                    fontFamily="ui-monospace, monospace"
+                  >
+                    {d.date}
+                  </text>
+                  <text
+                    x={Math.min(x + barWidth / 2, W - paddingRight - 46)}
+                    y={y - 14}
+                    textAnchor="middle"
+                    fontSize={9.5}
+                    fill="white"
+                    fontFamily="ui-monospace, monospace"
+                    fontWeight="600"
+                  >
+                    {formatRupees(d.units)}
+                  </text>
+                </g>
+              )}
+              {/* X-axis label — only show some to prevent crowding */}
+              {(barCount <= 10 || i % Math.ceil(barCount / 10) === 0 || i === barCount - 1) && (
+                <text
+                  x={x + barWidth / 2}
+                  y={paddingTop + chartH + 14}
+                  textAnchor="middle"
+                  fontSize={barCount > 15 ? 7.5 : 9}
+                  fill="#94a3b8"
+                  fontFamily="ui-monospace, monospace"
+                >
+                  {label}
+                </text>
+              )}
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+};
+
 export const OverviewPage: React.FC = () => {
   const { businessName } = useAuth();
   const navigate = useNavigate();
@@ -23,10 +194,13 @@ export const OverviewPage: React.FC = () => {
   const [timeframe, setTimeframe] = useState<'24h' | '7d' | '30d'>('7d');
 
   useEffect(() => {
-    setPayments(paymentsApi.getLocalDemoHistory());
+    paymentsApi
+      .list()
+      .then(setPayments)
+      .catch((err) => console.error('Failed to load dashboard payments:', err));
   }, []);
 
-  // Format currency in Indian Rupees
+                                     
   const formatRupees = (units: number) => {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
@@ -35,20 +209,44 @@ export const OverviewPage: React.FC = () => {
     }).format(units / 100);
   };
 
-  const capturedPayments = payments.filter((p) => p.status === 'CAPTURED');
+  const capturedPayments = payments.filter((p) => p.status === 'CAPTURED' || p.status === 'SETTLED');
   const failedPayments = payments.filter((p) => p.status === 'FAILED');
   const totalVolumeUnits = capturedPayments.reduce((acc, p) => acc + p.amount.amountUnits, 0);
   const totalAttempts = payments.length || 1;
   const successRate = ((capturedPayments.length / totalAttempts) * 100).toFixed(1);
 
-  // Method breakdown counts
+  // ── Transaction Volume Trend ─────────────────────────────────────────────
+  const volumeByDay = useMemo(() => {
+    const now = new Date();
+    const numDays = timeframe === '24h' ? 1 : timeframe === '7d' ? 7 : 30;
+    const cutoff = new Date(now.getTime() - numDays * 24 * 60 * 60 * 1000);
+
+    // Pre-fill every day in the range with 0
+    const days: Record<string, number> = {};
+    for (let i = numDays - 1; i >= 0; i--) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      days[d.toISOString().slice(0, 10)] = 0;
+    }
+
+    capturedPayments
+      .filter((p) => new Date(p.createdAt) >= cutoff)
+      .forEach((p) => {
+        const day = new Date(p.createdAt).toISOString().slice(0, 10);
+        if (day in days) days[day] = (days[day] || 0) + p.amount.amountUnits;
+      });
+
+    return Object.entries(days).map(([date, units]) => ({ date, units }));
+  }, [capturedPayments, timeframe]);
+
+                            
   const cardCount = payments.filter((p) => p.method === 'CARD').length;
   const upiCount = payments.filter((p) => p.method === 'UPI').length;
   const netBankingCount = payments.filter((p) => p.method === 'NETBANKING').length;
 
   return (
     <div className="space-y-6">
-      {/* Top Welcome & Period Filter */}
+      {                                 }
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-mantu-text">Merchant Dashboard</h2>
@@ -57,7 +255,7 @@ export const OverviewPage: React.FC = () => {
           </p>
         </div>
 
-        {/* Date Filter */}
+        {                 }
         <div className="flex items-center gap-1 p-1 bg-white border border-mantu-border rounded shadow-xs">
           <button
             onClick={() => setTimeframe('24h')}
@@ -92,7 +290,7 @@ export const OverviewPage: React.FC = () => {
         </div>
       </div>
 
-      {/* 5 Compact Key Metric Cards */}
+      {                                }
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         <div className="bg-white p-4 rounded border border-mantu-border shadow-card">
           <div className="flex items-center justify-between text-mantu-muted mb-2">
@@ -164,9 +362,9 @@ export const OverviewPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Charts Row */}
+      {                }
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Transaction Volume Trend Chart (2 cols) */}
+        {                                             }
         <div className="lg:col-span-2 bg-white p-5 rounded border border-mantu-border shadow-card">
           <div className="flex items-center justify-between mb-4 pb-3 border-b border-mantu-border">
             <div>
@@ -181,18 +379,11 @@ export const OverviewPage: React.FC = () => {
             </div>
           </div>
 
-          {/* Volume Trend Section */}
-          <div className="h-64 w-full pt-4 flex flex-col items-center justify-center border border-dashed border-slate-200 rounded">
-            <div className="text-center p-6">
-              <p className="text-xs font-semibold text-mantu-text">No transaction volume recorded</p>
-              <p className="text-[11px] text-mantu-muted mt-1">
-                Volume trends will be automatically graphed here as transactions are processed.
-              </p>
-            </div>
-          </div>
+          {/* SVG Bar Chart — Transaction Volume Trend */}
+          <VolumeBarChart data={volumeByDay} formatRupees={formatRupees} />
         </div>
 
-        {/* Payment Method Distribution */}
+        {                                 }
         <div className="bg-white p-5 rounded border border-mantu-border shadow-card flex flex-col justify-between">
           <div>
             <h3 className="text-sm font-semibold text-mantu-text">Method Distribution</h3>
@@ -267,7 +458,7 @@ export const OverviewPage: React.FC = () => {
         </div>
       </div>
 
-      {/* Recent Transactions List */}
+      {                              }
       <Card
         title="Recent Transactions"
         subtitle="Latest 5 payment attempts screened by Mantu Gateway"

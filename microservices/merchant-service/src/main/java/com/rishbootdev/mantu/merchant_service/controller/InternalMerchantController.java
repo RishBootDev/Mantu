@@ -25,12 +25,12 @@ public class InternalMerchantController {
     }
 
     @GetMapping("/{merchantId}/webhook-targets")
-    public List<WebhookTarget> getActiveConfigsForEvent(@PathVariable UUID merchantId, @RequestBody String eventType) {
+    public List<WebhookTarget> getActiveConfigsForEvent(@PathVariable UUID merchantId, @RequestParam String eventType) {
         return merchantLookupService.getActiveConfigsForEvent(merchantId, eventType);
     }
 
     @GetMapping("/active-ids")
-    public List<UUID> listActiveMerchantIds(@PathVariable UUID merchantId, @RequestBody String eventType) {
+    public List<UUID> listActiveMerchantIds() {
         return merchantLookupService.listActiveMerchantIds();
     }
 
