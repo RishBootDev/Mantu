@@ -11,7 +11,6 @@ from app.core.config import get_settings
 
 logger = logging.getLogger("merchant.db")
 
-
 class Base(DeclarativeBase):
     pass
 
