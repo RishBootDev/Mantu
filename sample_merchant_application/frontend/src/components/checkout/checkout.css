@@ -44,27 +44,42 @@
   margin-bottom: 18px;
 }
 
-.mc-mantu-logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 800;
-  font-size: 14px;
-  letter-spacing: -0.02em;
-  color: #0f172a;
+.mc-mantu-wordmark-wrap {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+  gap: 5px;
+  user-select: none;
 }
 
-.mc-mantu-mark {
-  width: 24px;
-  height: 24px;
-  border-radius: 6px;
-  background: #1d4ed8;
-  color: #ffffff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 13px;
+.mc-mantu-wordmark {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-style: italic;
+  font-weight: 900;
+  font-size: 1.65rem;
+  letter-spacing: -0.015em;
+  line-height: 1.05;
+  background: linear-gradient(
+    115deg,
+    #1d4ed8 0%,
+    #7c3aed 35%,
+    #db2777 70%,
+    #ea580c 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.mc-mantu-sub {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 500;
+  font-size: 0.56rem;
+  letter-spacing: 0.24em;
+  color: #475569;
+  text-transform: uppercase;
+  line-height: 1;
+  padding-left: 0.06em;
 }
 
 .mc-test-pill {

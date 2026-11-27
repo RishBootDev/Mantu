@@ -27,9 +27,9 @@ export function MerchantSummary({ options, onCopyOrderId }: MerchantSummaryProps
     <aside className="mc-left" aria-label="Order and merchant summary">
       <div>
         <div className="mc-mantu-brand">
-          <div className="mc-mantu-logo">
-            <span className="mc-mantu-mark" aria-hidden="true">M</span>
-            <span>Mantu Checkout</span>
+          <div className="mc-mantu-wordmark-wrap">
+            <span className="mc-mantu-wordmark">Mantu</span>
+            <span className="mc-mantu-sub">Payment&nbsp;Gateway</span>
           </div>
           <span className="mc-test-pill">Test Mode</span>
         </div>
