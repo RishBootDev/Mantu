@@ -68,7 +68,7 @@ export const TransactionsPage: React.FC = () => {
         <div>
           <h2 className="text-xl font-bold text-mantu-text">Payments & Transactions</h2>
           <p className="text-xs text-mantu-muted mt-0.5">
-            Audit log of all charges, routing decisions, and ML fraud inspection events.
+            Complete log of all payment attempts, statuses, and settlement details.
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -137,7 +137,6 @@ export const TransactionsPage: React.FC = () => {
                 <th className="py-3 px-4 font-semibold">Payment ID</th>
                 <th className="py-3 px-4 font-semibold">Order Reference</th>
                 <th className="py-3 px-4 font-semibold">Method & Details</th>
-                <th className="py-3 px-4 font-semibold">Gateway Route</th>
                 <th className="py-3 px-4 font-semibold text-right">Amount</th>
                 <th className="py-3 px-4 font-semibold text-center">Status</th>
                 <th className="py-3 px-4 font-semibold">Created At</th>
@@ -147,13 +146,13 @@ export const TransactionsPage: React.FC = () => {
             <tbody className="divide-y divide-mantu-border">
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="py-8 text-center text-mantu-muted">
+                  <td colSpan={7} className="py-8 text-center text-mantu-muted">
                     Loading transactions...
                   </td>
                 </tr>
               ) : filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="py-8 text-center text-mantu-muted">
+                  <td colSpan={7} className="py-8 text-center text-mantu-muted">
                     No transactions match the selected criteria.
                   </td>
                 </tr>
@@ -183,9 +182,6 @@ export const TransactionsPage: React.FC = () => {
                           Bank: {p.methodDetails.bank}
                         </div>
                       )}
-                    </td>
-                    <td className="py-3 px-4 font-mono text-[11px] text-mantu-muted">
-                      {p.selectedRouteId || 'fastapi_ml_route'}
                     </td>
                     <td className="py-3 px-4 font-mono font-bold text-mantu-text text-right">
                       {formatRupees(p.amount.amountUnits)}
@@ -244,11 +240,7 @@ export const TransactionsPage: React.FC = () => {
                 <span className="text-mantu-muted block text-[10px] uppercase font-semibold">Method</span>
                 <span className="font-medium text-mantu-text">{selectedPayment.method}</span>
               </div>
-              <div>
-                <span className="text-mantu-muted block text-[10px] uppercase font-semibold">Selected Route</span>
-                <span className="font-mono text-mantu-muted text-[11px]">{selectedPayment.selectedRouteId}</span>
-              </div>
-              <div className="col-span-2">
+              <div className="col-span-2 sm:col-span-3">
                 <span className="text-mantu-muted block text-[10px] uppercase font-semibold">Order ID</span>
                 <span className="font-mono text-mantu-text text-[11px]">{selectedPayment.orderId}</span>
               </div>

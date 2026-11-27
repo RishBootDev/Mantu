@@ -14,6 +14,157 @@ import { webhooksApi } from '../../api/webhooks';
 import { WebhookConfigResponse } from '../../types/api';
 import { useToast } from '../../components/common/Toast';
 
+type SnippetLang = 'nodejs' | 'python' | 'springboot' | 'go' | 'php';
+
+const WEBHOOK_SNIPPETS: { id: SnippetLang; label: string; code: string }[] = [
+  {
+    id: 'nodejs',
+    label: 'Node.js (Express)',
+    code: `// Node.js Express Webhook Verification Example
+const crypto = require('crypto');
+
+app.post('/mantu-webhook', (req, res) => {
+  const secret = process.env.MANTU_WEBHOOK_SECRET;
+  const signature = req.headers['x-mantu-signature'] || '';
+  const expected = crypto
+    .createHmac('sha256', secret)
+    .update(JSON.stringify(req.body))
+    .digest('hex');
+
+  if (
+    signature.length === expected.length &&
+    crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
+  ) {
+    const { event, payload } = req.body;
+    console.log(\`Processed \${event} for Order \${payload.orderId}\`);
+    return res.status(200).send('OK');
+  }
+  return res.status(400).send('Invalid signature');
+});`,
+  },
+  {
+    id: 'python',
+    label: 'Python (FastAPI)',
+    code: `# Python FastAPI Webhook Verification Example
+import hashlib
+import hmac
+import os
+from fastapi import FastAPI, Header, HTTPException, Request
+
+app = FastAPI()
+
+@app.post("/mantu-webhook")
+async def mantu_webhook(request: Request, x_mantu_signature: str = Header(default="")):
+    secret = os.environ["MANTU_WEBHOOK_SECRET"].encode("utf-8")
+    body = await request.body()
+    expected = hmac.new(secret, body, hashlib.sha256).hexdigest()
+
+    if not hmac.compare_digest(x_mantu_signature.lower(), expected.lower()):
+        raise HTTPException(status_code=400, detail="Invalid signature")
+
+    data = await request.json()
+    print(f"Processed {data.get('event')} for Order {data.get('payload', {}).get('orderId')}")
+    return {"status": "ok"}`,
+  },
+  {
+    id: 'springboot',
+    label: 'Spring Boot (Java)',
+    code: `// Spring Boot Webhook Verification Example
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.HexFormat;
+
+@RestController
+public class MantuWebhookController {
+
+    @Value("\${mantu.webhook.secret}")
+    private String webhookSecret;
+
+    @PostMapping("/mantu-webhook")
+    public ResponseEntity<String> handleWebhook(
+            @RequestHeader(value = "X-Mantu-Signature", defaultValue = "") String signature,
+            @RequestBody String rawBody) throws Exception {
+
+        Mac mac = Mac.getInstance("HmacSHA256");
+        mac.init(new SecretKeySpec(webhookSecret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+        String expected = HexFormat.of().formatHex(mac.doFinal(rawBody.getBytes(StandardCharsets.UTF_8)));
+
+        boolean valid = MessageDigest.isEqual(
+                signature.toLowerCase().getBytes(StandardCharsets.UTF_8),
+                expected.getBytes(StandardCharsets.UTF_8)
+        );
+        if (!valid) {
+            return ResponseEntity.badRequest().body("Invalid signature");
+        }
+        return ResponseEntity.ok("OK");
+    }
+}`,
+  },
+  {
+    id: 'go',
+    label: 'Go',
+    code: `// Go net/http Webhook Verification Example
+package main
+
+import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
+	"io"
+	"net/http"
+	"os"
+)
+
+func mantuWebhookHandler(w http.ResponseWriter, r *http.Request) {
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Bad request", http.StatusBadRequest)
+		return
+	}
+
+	mac := hmac.New(sha256.New, []byte(os.Getenv("MANTU_WEBHOOK_SECRET")))
+	mac.Write(body)
+	expected := hex.EncodeToString(mac.Sum(nil))
+	signature := r.Header.Get("X-Mantu-Signature")
+
+	if !hmac.Equal([]byte(signature), []byte(expected)) {
+		http.Error(w, "Invalid signature", http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("OK"))
+}`,
+  },
+  {
+    id: 'php',
+    label: 'PHP',
+    code: `<?php
+// PHP Webhook Verification Example
+$secret = getenv('MANTU_WEBHOOK_SECRET');
+$payload = file_get_contents('php://input');
+$signature = $_SERVER['HTTP_X_MANTU_SIGNATURE'] ?? '';
+
+$expected = hash_hmac('sha256', $payload, $secret);
+
+if (!hash_equals($expected, strtolower($signature))) {
+    http_response_code(400);
+    echo 'Invalid signature';
+    exit;
+}
+
+$data = json_decode($payload, true);
+http_response_code(200);
+echo 'OK';`,
+  },
+];
+
 export const WebhooksPage: React.FC = () => {
   const [webhooks, setWebhooks] = useState<WebhookConfigResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -25,6 +176,8 @@ export const WebhooksPage: React.FC = () => {
   ]);
   const [newWebhookSecret, setNewWebhookSecret] = useState<string | null>(null);
   const [copiedSecret, setCopiedSecret] = useState(false);
+  const [activeLang, setActiveLang] = useState<SnippetLang>('nodejs');
+  const [copiedCode, setCopiedCode] = useState(false);
 
   const { showToast } = useToast();
 
@@ -186,26 +339,54 @@ export const WebhooksPage: React.FC = () => {
         <p className="text-xs text-mantu-muted leading-relaxed mb-3">
           Every HTTP POST from Mantu includes header <code className="font-mono font-semibold text-mantu-text">X-Mantu-Signature</code>. Validate this signature against your webhook secret before processing orders in your server.
         </p>
-        <div className="p-3 bg-slate-900 text-slate-100 rounded text-[11px] font-mono overflow-x-auto">
-{`// Node.js Express Webhook Verification Example
-const crypto = require('crypto');
+        <div className="rounded-lg overflow-hidden border border-slate-800 bg-slate-900">
+          {/* Language switcher bar */}
+          <div className="flex items-center justify-between gap-2 px-3 py-2 bg-slate-950/80 border-b border-slate-800 overflow-x-auto">
+            <div className="flex items-center gap-1">
+              {WEBHOOK_SNIPPETS.map((snippet) => (
+                <button
+                  key={snippet.id}
+                  type="button"
+                  onClick={() => setActiveLang(snippet.id)}
+                  className={`px-2.5 py-1 rounded text-[11px] font-medium transition-colors whitespace-nowrap ${
+                    activeLang === snippet.id
+                      ? 'bg-mantu-accent text-white'
+                      : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/80'
+                  }`}
+                >
+                  {snippet.label}
+                </button>
+              ))}
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const current = WEBHOOK_SNIPPETS.find((s) => s.id === activeLang);
+                if (!current) return;
+                navigator.clipboard.writeText(current.code);
+                setCopiedCode(true);
+                showToast(`${current.label} snippet copied`, 'success');
+                setTimeout(() => setCopiedCode(false), 2000);
+              }}
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded text-[11px] font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors shrink-0"
+            >
+              {copiedCode ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Copied</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Copy</span>
+                </>
+              )}
+            </button>
+          </div>
 
-app.post('/mantu-webhook', (req, res) => {
-  const secret = process.env.MANTU_WEBHOOK_SECRET;
-  const signature = req.headers['x-mantu-signature'];
-  const expected = crypto
-    .createHmac('sha256', secret)
-    .update(JSON.stringify(req.body))
-    .digest('hex');
-
-  if (signature === expected) {
-    // Valid event payload from Mantu Gateway
-    const { event, payload } = req.body;
-    console.log(\`Processed \${event} for Order \${payload.orderId}\`);
-    return res.status(200).send('OK');
-  }
-  return res.status(400).send('Invalid signature');
-});`}
+          <pre className="p-4 text-slate-100 text-[11px] font-mono overflow-x-auto whitespace-pre leading-relaxed">
+            <code>{WEBHOOK_SNIPPETS.find((s) => s.id === activeLang)?.code}</code>
+          </pre>
         </div>
       </Card>
 

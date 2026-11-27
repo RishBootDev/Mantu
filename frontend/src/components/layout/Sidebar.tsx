@@ -209,16 +209,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           ))}
         </div>
 
-        {                 }
-        <div className="p-4 border-t border-mantu-border bg-slate-50/50">
-          <div className="flex items-center justify-between text-xs text-mantu-muted">
-            <span className="font-mono text-[11px]">API: Port 8080</span>
-            <span className="flex items-center gap-1 text-[11px]">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              Connected
-            </span>
-          </div>
-        </div>
       </aside>
     </>
   );

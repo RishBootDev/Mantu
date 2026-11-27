@@ -344,7 +344,7 @@ export const OverviewPage: React.FC = () => {
             {failedPayments.length}
           </div>
           <div className="mt-2 text-[11px] text-rose-700 font-medium">
-            Includes ML Risk triggers
+            Declined or blocked payments
           </div>
         </div>
 
@@ -448,10 +448,10 @@ export const OverviewPage: React.FC = () => {
 
           <div className="mt-6 pt-4 border-t border-mantu-border bg-slate-50 -mx-5 -mb-5 p-4 rounded-b">
             <div className="flex items-center justify-between text-xs text-mantu-muted">
-              <span>ML Smart Routing Status:</span>
+              <span>Gateway Status:</span>
               <span className="font-mono text-emerald-700 font-semibold flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                Active (Auto-Optimized)
+                Operational (Live)
               </span>
             </div>
           </div>
@@ -481,7 +481,6 @@ export const OverviewPage: React.FC = () => {
                 <th className="py-2.5 px-4 font-semibold">Payment ID</th>
                 <th className="py-2.5 px-4 font-semibold">Order ID</th>
                 <th className="py-2.5 px-4 font-semibold">Method</th>
-                <th className="py-2.5 px-4 font-semibold">Smart Route</th>
                 <th className="py-2.5 px-4 font-semibold text-right">Amount</th>
                 <th className="py-2.5 px-4 font-semibold text-center">Status</th>
                 <th className="py-2.5 px-4 font-semibold">Date / Time</th>
@@ -490,7 +489,7 @@ export const OverviewPage: React.FC = () => {
             <tbody className="divide-y divide-mantu-border font-sans">
               {payments.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-8 text-center text-mantu-muted text-xs">
+                  <td colSpan={6} className="py-8 text-center text-mantu-muted text-xs">
                     No recent transactions found.
                   </td>
                 </tr>
@@ -512,9 +511,6 @@ export const OverviewPage: React.FC = () => {
                           </span>
                         )}
                       </span>
-                    </td>
-                    <td className="py-3 px-4 font-mono text-[11px] text-mantu-muted">
-                      {p.selectedRouteId || 'fastapi_ml_route'}
                     </td>
                     <td className="py-3 px-4 font-mono font-semibold text-mantu-text text-right">
                       {formatRupees(p.amount.amountUnits)}
