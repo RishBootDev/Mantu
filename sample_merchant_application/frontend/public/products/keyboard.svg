@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Keyboard">
+  <rect width="400" height="300" fill="#f6e7b4"/>
+  <rect x="50" y="95" width="300" height="130" rx="14" fill="#141a26"/>
+  <g fill="#f6f7f9">
+    <rect x="66" y="111" width="30" height="24" rx="5"/><rect x="102" y="111" width="30" height="24" rx="5"/>
+    <rect x="138" y="111" width="30" height="24" rx="5"/><rect x="174" y="111" width="30" height="24" rx="5"/>
+    <rect x="210" y="111" width="30" height="24" rx="5"/><rect x="246" y="111" width="30" height="24" rx="5"/>
+    <rect x="282" y="111" width="52" height="24" rx="5" fill="#2330c9"/>
+    <rect x="66" y="141" width="44" height="24" rx="5"/><rect x="116" y="141" width="30" height="24" rx="5"/>
+    <rect x="152" y="141" width="30" height="24" rx="5"/><rect x="188" y="141" width="30" height="24" rx="5"/>
+    <rect x="224" y="141" width="30" height="24" rx="5"/><rect x="260" y="141" width="30" height="24" rx="5"/>
+    <rect x="296" y="141" width="38" height="24" rx="5"/>
+    <rect x="66" y="171" width="30" height="40" rx="5"/><rect x="102" y="171" width="150" height="40" rx="5"/>
+    <rect x="258" y="171" width="30" height="40" rx="5"/><rect x="294" y="171" width="40" height="40" rx="5"/>
+  </g>
+</svg>
